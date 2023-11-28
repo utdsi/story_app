@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    >
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:id="@+id/threeDisplay"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="55"
+        android:scaleType="centerCrop"
+        android:background="@drawable/imagedisplay"
+        android:paddingRight="2dp"
+        android:outlineProvider="background"
+        android:clipToOutline="true"/>
+    
+    <LinearLayout
+
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:orientation="vertical"
+        android:layout_weight="45"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="2dp">
+
+        <ImageView
+            android:id="@+id/fourDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/imagedisplay"
+            android:layout_marginBottom="2dp"
+            android:outlineProvider="background"
+            android:clipToOutline="true"
+            />
+        <ImageView
+            android:layout_width="match_parent"
+            android:id="@+id/fiveDisplay"
+            android:scaleType="centerCrop"
+            android:layout_height="48dp"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/imagedisplay"
+            android:outlineProvider="background"
+            android:clipToOutline="true"
+            />
+
+    </LinearLayout>
+
+
+</LinearLayout>

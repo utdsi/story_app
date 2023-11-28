@@ -1,0 +1,29 @@
+<!-- checkbox_bg.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Checked state -->
+    <item android:state_checked="true">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/eye" />
+                    <corners android:radius="4dp" />
+                    <!-- You can adjust the radius as needed -->
+                </shape>
+            </item>
+
+        </layer-list>
+    </item>
+
+    <!-- Unchecked state -->
+    <item android:state_checked="false">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/eye" />
+                    <corners android:radius="4dp" />
+                </shape>
+            </item>
+
+        </layer-list>
+    </item>
+</selector>
