@@ -24,7 +24,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="550dp"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:clipToPadding="false"/>
     <TextView
         android:id="@+id/currentSliderNameTextView"
         android:layout_width="wrap_content"

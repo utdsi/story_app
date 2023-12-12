@@ -117,6 +117,9 @@ class UpdatePassword : AppCompatActivity() {
                 .setPositiveButton("OK") { dialog, _ ->
                     // Dismiss the dialog when the "OK" button is clicked
                     dialog.dismiss()
+
+                    val intent = Intent(this@UpdatePassword,UserProfile::class.java)
+                    startActivity(intent)
                 }
 
             // Create and show the dialog
@@ -142,6 +145,8 @@ class UpdatePassword : AppCompatActivity() {
              updatePassword()
             // ...
             dialog.dismiss()
+
+
         }
 
         builder.setNegativeButton("No") { dialog, which ->

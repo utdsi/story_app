@@ -35,11 +35,18 @@ class Login : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         val signupBtn = findViewById<TextView>(R.id.signupRedirect)
-        val forgotBtn = findViewById<TextView>(R.id.forgotPassword)
-        val data = findViewById<TextView>(R.id.registerDisplay)
+        val forgotBtn = findViewById<TextView>(R.id.fPassword)
+
         loginBtn = findViewById(R.id.loginBtn)
         email = findViewById(R.id.logEmail)
         password  = findViewById(R.id.logPassword)
+
+        val backBtn = findViewById<Button>(R.id.backBtn2)
+        backBtn.setOnClickListener {
+
+            val intent = Intent(this@Login,home2::class.java)
+            startActivity(intent)
+        }
 
 
         signupBtn.setOnClickListener {
@@ -226,7 +233,7 @@ class Login : AppCompatActivity() {
                 .setPositiveButton("OK") { dialog, _ ->
                     // Dismiss the dialog when the "OK" button is clicked
                     dialog.dismiss()
-                    val intent  = Intent(this@Login,UserProfile::class.java)
+                    val intent  = Intent(this@Login,Home3::class.java)
                     startActivity(intent)
                 }
 
@@ -234,5 +241,9 @@ class Login : AppCompatActivity() {
             val dialog = builder.create()
             dialog.show()
         }
+    }
+    override fun onBackPressed() {
+        // Do nothing to restrict the back button
+        // You can add your custom logic here if needed
     }
 }

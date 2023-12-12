@@ -19,14 +19,49 @@ data class ApiResponse(
 )
 
 data class LanguageRequest(
-    val languages_id : Int,
-    val name: String,
+    var languages_id : Int,
+    var name: String,
 
 )
 
 data class LanguageApiResponse(
-    val status: Int,
-    val message: String,
-    val data: List<LanguageRequest>?
+    var status: Int,
+    var message: String,
+    var data: List<LanguageRequest>?
 
+)
+
+//category_id
+
+data class CategoryApiResponse(
+    var status: Int,
+    var message: String,
+    var data: List<CategoryRequest>?
+
+)
+data class CategoryRequest(
+    val category_id: Int,
+    val name: String
+)
+
+data class ImageApiResponse(
+    var status: Int,
+    var message: String,
+    var data: List<ImageRequest>?
+)
+data class ImageRequest(
+
+    val post_image_id: Int,
+    val title: String,
+    val description: String,
+    val category_id: Int,
+    val language_id: Int,
+    val status: Int,
+    val image: String
+
+)
+
+data class ImageShare(
+    val image_id: Int,
+    val image: String
 )

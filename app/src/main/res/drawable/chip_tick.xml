@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/ic_check.xml -->
+<!-- res/drawable/chip_border.xml -->
+<!-- res/drawable/ic_check.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:width="24dp" android:height="24dp">
+        <rotate
+            android:fromDegrees="45"
+            android:toDegrees="45"
+            android:pivotX="50%"
+            android:pivotY="50%">
+            <shape android:shape="rectangle">
+                <solid android:color="@android:color/darker_gray" /> <!-- Change to your desired color -->
+            </shape>
+        </rotate>
+    </item>
+</layer-list>
+
+

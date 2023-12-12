@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ShareImageActivity"
+    android:orientation="vertical"
+    android:padding="15dp">
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/backBtn"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@drawable/backbutton"
+        android:layout_marginBottom="20dp"/>
+    <ImageView
+        android:id="@+id/shareImage1"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/imagedisplay"
+        android:outlineProvider="background"
+
+
+        android:clipToOutline="true"
+        android:scaleType="fitXY"
+
+        />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/shareBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button"
+        android:text="Share"
+        android:textAllCaps="false"
+        android:textSize="20dp"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:fontFamily="sans-serif"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

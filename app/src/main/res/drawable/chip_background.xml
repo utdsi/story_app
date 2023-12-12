@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/chip_background.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Selected state -->
+    <item android:state_checked="true">
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/darker_gray" /> <!-- Change to your desired color -->
+                    <stroke
+                        android:width="4dp"
+                        android:color="@android:color/white" />
+                </shape>
+            </item>
+            <item android:drawable="@drawable/chip_tick" android:gravity="end|bottom"/>
+        </layer-list>
+    </item>
+    <!-- Default state -->
+    <item android:state_checked="false">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke
+                android:width="1dp"
+                android:color="@android:color/transparent" />
+        </shape>
+    </item>
+</selector>

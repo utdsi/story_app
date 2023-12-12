@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import android.Manifest
+import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
@@ -64,7 +65,7 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     private lateinit var saveEditData: Button
     private lateinit var dob: String
     private lateinit var setImage: ImageView
-    private lateinit var setImageBtn: Button
+    private lateinit var setImageBtn: ImageView
     private val REQUEST_IMAGE_CAPTURE = 1
     private val REQUEST_IMAGE_PICK = 2
     private var imageUri: Uri? = null
@@ -186,17 +187,7 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
         logOutUser.setOnClickListener {
 
-            if(checkForInternet(this)){
-                val sh = getSharedPreferences("MySharedPref", MODE_PRIVATE)
-                val editor = sh.edit()
-                editor.clear()
-                editor.apply()
-                Toast.makeText(this, "$name logged out successfully", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this,Login::class.java)
-                startActivity(intent)
-            }else{
-                Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
-            }
+            showYesNoDialog()
 
 
         }
@@ -645,5 +636,46 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         }else{
             Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
         }
+    }
+    override fun onBackPressed() {
+        // Do nothing to restrict the back button
+        // You can add your custom logic here if needed
+    }
+    private fun showYesNoDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+
+        // Set the dialog title and message
+        alertDialogBuilder.setTitle("Confirmation")
+        alertDialogBuilder.setMessage("Do you want to proceed?")
+
+        // Set positive button and its click listener
+        alertDialogBuilder.setPositiveButton("Yes") { dialog: DialogInterface, _: Int ->
+            // Do something when "Yes" is clicked
+            dialog.dismiss() // Close the dialog
+            // Add your logic here for the "Yes" option
+            if(checkForInternet(this)){
+                val sh = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+                val editor = sh.edit()
+                editor.clear()
+                editor.apply()
+                Toast.makeText(this, "User logged out successfully", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this,Login::class.java)
+                startActivity(intent)
+            }else{
+                Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+        // Set negative button and its click listener
+        alertDialogBuilder.setNegativeButton("No") { dialog: DialogInterface, _: Int ->
+            // Do something when "No" is clicked
+            dialog.dismiss() // Close the dialog
+            // Add your logic here for the "No" option
+        }
+
+        // Create and show the alert dialog
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 }

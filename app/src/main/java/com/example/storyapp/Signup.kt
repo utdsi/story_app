@@ -3,6 +3,7 @@ package com.example.storyapp
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -25,12 +26,14 @@ import okhttp3.Request
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.regex.Pattern
 
 class Signup : AppCompatActivity() {
 
     private lateinit var email: EditText
     private lateinit var name: EditText
     private lateinit var password: EditText
+    private lateinit var loginRedirect: TextView
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +42,19 @@ class Signup : AppCompatActivity() {
         email = findViewById(R.id.registerEmail)
         name = findViewById(R.id.registerName)
         password = findViewById(R.id.registerPassword)
+        loginRedirect = findViewById(R.id.sLRedirect)
+        val backBtn = findViewById<Button>(R.id.backBtn3)
+        backBtn.setOnClickListener {
+
+            val intent = Intent(this@Signup,Login::class.java)
+            startActivity(intent)
+        }
+
+        loginRedirect.setOnClickListener {
+
+            val intent = Intent(this@Signup,Login::class.java)
+            startActivity(intent)
+        }
 
 
 
@@ -60,6 +76,10 @@ class Signup : AppCompatActivity() {
                     val emailRegex = Regex(emailPattern)
 
                     if(emailRegex.matches(emailValue)){
+
+                        val passwordRegex = Pattern.compile("^.{6,}$")
+
+                        if (passwordRegex.matcher(passwordValue).matches()){
                         // Use Kotlin Coroutine to perform the network operation asynchronously
                         GlobalScope.launch(Dispatchers.IO) {
                             val client = OkHttpClient()
@@ -94,7 +114,7 @@ class Signup : AppCompatActivity() {
 //
                                 if(registrationResponse.status==1){
 
-                                  showDialog(this@Signup,"User Successfully registered","REGISTRATION SUCCESS")
+                                  showDialogSuccess(this@Signup,"User Successfully registered","REGISTRATION SUCCESS")
 
 
                                 }else if(registrationResponse.status==2){
@@ -111,11 +131,14 @@ class Signup : AppCompatActivity() {
                                 e.printStackTrace()
                             }
                         }
+                    }else {
 
+                            Toast.makeText(this, "Password should be minimum of 6 characters ", Toast.LENGTH_SHORT).show()
+                    }
 
 
                     }else{
-                        Toast.makeText(this, "Please enter the correct format of email", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Please enter the correct format of email ", Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -129,7 +152,9 @@ class Signup : AppCompatActivity() {
 
     }
 
-//checking internet
+
+
+    //checking internet
     private fun checkForInternet(context: Context): Boolean {
 
         // register activity with the connectivity manager service
@@ -194,5 +219,28 @@ class Signup : AppCompatActivity() {
             val dialog = builder.create()
             dialog.show()
         }
+    }
+    private fun showDialogSuccess(context: Context, message: String, alert: String) {
+        (context as? Activity)?.runOnUiThread {
+            val builder = AlertDialog.Builder(context)
+
+            // Set the dialog title and message
+            builder.setTitle(alert)
+                .setMessage(message)
+                .setPositiveButton("OK") { dialog, _ ->
+                    // Dismiss the dialog when the "OK" button is clicked
+                    dialog.dismiss()
+                    val intent  = Intent(this@Signup,Login::class.java)
+                    startActivity(intent)
+                }
+
+            // Create and show the dialog
+            val dialog = builder.create()
+            dialog.show()
+        }
+    }
+    override fun onBackPressed() {
+        // Do nothing to restrict the back button
+        // You can add your custom logic here if needed
     }
 }

@@ -12,16 +12,16 @@
 
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/backBtn2"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/backBtn3"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:background="@drawable/backbutton"
         android:layout_marginBottom="20dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/backBtn2"
+        android:layout_below="@+id/backBtn3"
         android:layout_marginTop="60dp"
         android:background="@drawable/loginback"
         android:orientation="vertical"
@@ -186,7 +186,7 @@
                 android:text="Already Have a account ? "
                 android:textColor="@color/text"/>
             <TextView
-                android:id="@+id/loginRedirect"
+                android:id="@+id/sLRedirect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="  Login"

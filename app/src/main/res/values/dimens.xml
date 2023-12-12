@@ -4,5 +4,6 @@
     <dimen name="item_space">1dp</dimen>
     <dimen name="chip_corner_radius">15dp</dimen>
     <dimen name="chip_padding">30dp</dimen>
+    <dimen name="recycler_view_height">550dp</dimen>
 
 </resources>
