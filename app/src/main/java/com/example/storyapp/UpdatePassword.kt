@@ -14,6 +14,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.github.ybq.android.spinkit.SpinKitView
+import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -29,16 +31,26 @@ class UpdatePassword : AppCompatActivity() {
     private lateinit var newPassword: EditText
     private lateinit var submitBtn: Button
     private var email: String? = null
+    private lateinit var loadingDialog: LoadingDialog
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update_password)
+
+        loadingDialog = LoadingDialog(this)
 
 
         displayEmail = findViewById(R.id.updatePasswordEmail)
         oldPassword = findViewById(R.id.oldPassword)
         newPassword = findViewById(R.id.newPassword)
         submitBtn = findViewById(R.id.submitUpdatePasswordBtn)
+        val backBtn = findViewById<Button>(R.id.backBtn6)
+
+        backBtn.setOnClickListener {
+
+            val intent = Intent(this@UpdatePassword,UserProfile::class.java)
+            startActivity(intent)
+        }
 
         val sh = getSharedPreferences("MySharedPref", MODE_PRIVATE)
          email = sh.getString("email","")
@@ -160,6 +172,8 @@ class UpdatePassword : AppCompatActivity() {
     }
 
     private fun updatePassword(){
+
+        showLoadingDialog()
         if(checkForInternet(this)){
             val newPasswordValue = newPassword.text.toString()
             val oldPasswordValue = oldPassword.text.toString()
@@ -197,7 +211,7 @@ class UpdatePassword : AppCompatActivity() {
 //                            // Example: Log the response body
                             Log.d("response", registrationResponse.toString())
 
-
+                            dismissLoadingDialog()
                             if(registrationResponse.status==1){
 
                                 showDialogSuccessUpdate(this@UpdatePassword,"Password updated successfully","UPDATE SUCCESS")
@@ -240,7 +254,7 @@ class UpdatePassword : AppCompatActivity() {
                 .setPositiveButton("OK") { dialog, _ ->
                     // Dismiss the dialog when the "OK" button is clicked
                     dialog.dismiss()
-                    val intent  = Intent(this@UpdatePassword,UserProfile::class.java)
+                    val intent  = Intent(this@UpdatePassword,Login::class.java)
                     startActivity(intent)
                 }
 
@@ -248,5 +262,13 @@ class UpdatePassword : AppCompatActivity() {
             val dialog = builder.create()
             dialog.show()
         }
+    }
+    private fun dismissLoadingDialog() {
+        loadingDialog.dismiss()
+    }
+    private fun showLoadingDialog() {
+        loadingDialog.show()
+        val spinKitView = loadingDialog.findViewById<SpinKitView>(R.id.spin_kit)
+        spinKitView.setIndeterminateDrawable(Wave())
     }
 }

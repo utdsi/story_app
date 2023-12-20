@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -16,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.github.ybq.android.spinkit.SpinKitView
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,11 +30,14 @@ import okhttp3.Request
 
 class home2 : AppCompatActivity() {
 
-
+    private lateinit var spinKit: SpinKitView
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home2)
+
+        spinKit = findViewById(R.id.spin_kit)
+        val nextBtn = findViewById<Button>(R.id.nextBtn)
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         //val list = mutableListOf<LanguageRequest>(LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"))
@@ -40,6 +45,9 @@ class home2 : AppCompatActivity() {
         var list: List<LanguageRequest> = mutableListOf()
 
         GlobalScope.launch(Dispatchers.IO) {
+
+            spinKit.visibility = View.VISIBLE
+
             val client = OkHttpClient()
             val mediaType = "text/plain".toMediaType()
             val request = Request.Builder()
@@ -81,13 +89,8 @@ class home2 : AppCompatActivity() {
                         val adapter = LanguageAdapter(this@home2,list as MutableList<LanguageRequest>)
                         recyclerView.adapter = adapter
 //
-//                        // Scroll to the middle item initially
-                        val middlePosition = list.size / 2
-                        val recyclerViewHeight = resources.getDimensionPixelSize(R.dimen.recycler_view_height)
-                        val middleOffset = recyclerViewHeight / 2
 //
-//                        // Scroll to the calculated position
-                        layoutManager.scrollToPositionWithOffset(middlePosition, middleOffset)
+
 
 
 
@@ -103,6 +106,9 @@ class home2 : AppCompatActivity() {
 
                                 // Close the response to release resources
                 response.close()
+
+                spinKit.visibility = View.GONE
+
 
             } catch (e: Exception) {
                 // Handle network request failure
@@ -126,7 +132,7 @@ class home2 : AppCompatActivity() {
 
         // Set the initial value of the TextView
 
-        val nextBtn = findViewById<Button>(R.id.nextBtn)
+
         nextBtn.setOnClickListener {
 
             val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)

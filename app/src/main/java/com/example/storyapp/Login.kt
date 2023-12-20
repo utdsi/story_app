@@ -10,11 +10,16 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.github.ybq.android.spinkit.SpinKitView
+import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -24,15 +29,21 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
+
 class Login : AppCompatActivity() {
 
     private lateinit var loginBtn: Button
     private lateinit var email: EditText
     private lateinit var password: EditText
+    private lateinit var loadingDialog: LoadingDialog
+    private lateinit var check: ImageView
+    private lateinit var unCheck: ImageView
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        loadingDialog = LoadingDialog(this)
 
         val signupBtn = findViewById<TextView>(R.id.signupRedirect)
         val forgotBtn = findViewById<TextView>(R.id.fPassword)
@@ -40,6 +51,24 @@ class Login : AppCompatActivity() {
         loginBtn = findViewById(R.id.loginBtn)
         email = findViewById(R.id.logEmail)
         password  = findViewById(R.id.logPassword)
+        check = findViewById(R.id.checkBox)
+        unCheck = findViewById(R.id.unCheckBox)
+
+        check.setOnClickListener {
+
+            unCheck.visibility = View.VISIBLE
+
+            check.visibility = View.GONE
+        }
+
+        unCheck.setOnClickListener {
+
+            check.visibility = View.VISIBLE
+
+            unCheck.visibility = View.GONE
+        }
+
+
 
         val backBtn = findViewById<Button>(R.id.backBtn2)
         backBtn.setOnClickListener {
@@ -60,18 +89,40 @@ class Login : AppCompatActivity() {
             startActivity(intent)
         }
 
+
+        val sharedPreferences = getSharedPreferences("showDetails", Context.MODE_PRIVATE)
+
+
+        val showEmail = sharedPreferences.getString("showEmail", "")
+
+// Retrieve the second value
+        val showPassword = sharedPreferences.getString("showPassword", "")
+
+
+        if(showEmail!="" && showPassword!=""){
+            email.setText(showEmail)
+            password.setText(showPassword)
+        }
+        Log.d("hell","$showEmail,$showPassword")
+
+
+
         loginBtn.setOnClickListener{
+
+            showLoadingDialog()
+
 
             val emailValue = email.text.toString()
             val passwordValue = password.text.toString()
 
 
-
+                //spinView.visibility = View.VISIBLE
 
 
             if(checkForInternet(this)){
 
                 if(emailValue.isEmpty() || passwordValue.isEmpty()){
+                    dismissLoadingDialog()
                     Toast.makeText(this, "Please enter all the details", Toast.LENGTH_SHORT).show()
                 }else{
                     val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
@@ -80,6 +131,8 @@ class Login : AppCompatActivity() {
                     if(emailRegex.matches(emailValue)){
 
                         GlobalScope.launch(Dispatchers.IO) {
+
+
                             val client = OkHttpClient()
                             val mediaType = "text/plain".toMediaType()
                             val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
@@ -106,8 +159,10 @@ class Login : AppCompatActivity() {
                                 // Example: Log the response body
                                 Log.d("response", registrationResponse.toString())
 
-
+                                dismissLoadingDialog()
+                                //spinView.visibility = View.GONE
                                 if(registrationResponse.status==1){
+
 
                                    // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
 
@@ -138,6 +193,7 @@ class Login : AppCompatActivity() {
 //                                // Close the response to release resources
                                 response.close()
 
+
                             } catch (e: Exception) {
                                 // Handle network request failure
                                 e.printStackTrace()
@@ -145,10 +201,12 @@ class Login : AppCompatActivity() {
                         }
 
                     }else{
+                        dismissLoadingDialog()
                         Toast.makeText(this, "Please enter the correct format of email", Toast.LENGTH_SHORT).show()
                     }
                 }
             }else{
+                dismissLoadingDialog()
                 Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
             }
         }
@@ -242,8 +300,17 @@ class Login : AppCompatActivity() {
             dialog.show()
         }
     }
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         // Do nothing to restrict the back button
         // You can add your custom logic here if needed
+    }
+    private fun dismissLoadingDialog() {
+        loadingDialog.dismiss()
+    }
+    private fun showLoadingDialog() {
+        loadingDialog.show()
+        val spinKitView = loadingDialog.findViewById<SpinKitView>(R.id.spin_kit)
+        spinKitView.setIndeterminateDrawable(Wave())
     }
 }

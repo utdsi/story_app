@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,6 +9,8 @@
     android:background="@drawable/login"
     android:orientation="vertical"
     android:padding="15dp">
+
+
 
 
     <androidx.appcompat.widget.AppCompatButton
@@ -107,19 +109,34 @@
             android:gravity="start"
             android:layout_marginBottom="15dp">
 
-
-
-            <CheckBox
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Remember me"
-                android:textColor="@color/text"
-                android:textSize="15dp"
-                android:checked="true"
-                android:layout_gravity="start"
-                android:theme="@style/MyCheckBox"
-                android:buttonTint="@color/eye"
-                />
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_gravity="start">
+
+                <ImageView
+                    android:id="@+id/checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/check"/>
+
+                <ImageView
+                    android:id="@+id/unCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/uncheck"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Remember me"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/text"/>
+            </LinearLayout>
+
+
 
 
 
@@ -184,4 +201,4 @@
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

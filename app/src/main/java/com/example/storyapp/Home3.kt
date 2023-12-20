@@ -1,6 +1,8 @@
 package com.example.storyapp
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -16,10 +18,20 @@ import android.widget.GridView
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.ybq.android.spinkit.SpinKitView
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
 import com.google.android.material.chip.ChipGroup
@@ -42,6 +54,11 @@ class Home3 : AppCompatActivity() {
 
     private var category_id: String = ""
     private lateinit var userProfile: ImageView
+    private var mInterstitialAd: InterstitialAd? = null
+    private lateinit var constraint: ConstraintLayout
+    private lateinit var homeIcon: ImageView
+
+
     @SuppressLint("MissingInflatedId", "WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -50,6 +67,26 @@ class Home3 : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home3)
+
+        loadInterAd()
+
+
+
+
+       constraint = findViewById(R.id.constraint)
+        constraint.visibility = View.GONE
+        val plusBtn = findViewById<ImageView>(R.id.smallerCircle)
+        plusBtn.setOnClickListener {
+
+            Toast.makeText(this@Home3,"In Progress",Toast.LENGTH_SHORT).show()
+        }
+
+homeIcon = findViewById(R.id.homeIcon)
+
+
+
+
+
 
 //        val lay = findViewById<LinearLayout>(R.id.helloLayout)
         userProfile = findViewById(R.id.peopleIcon)
@@ -94,17 +131,97 @@ class Home3 : AppCompatActivity() {
         val view2 = inflater.inflate(R.layout.two_layout,null)
 
 
+        val chipGroup1 = findViewById<ChipGroup>(R.id.horizontalChipGroup1)
+
+
+        homeIcon.setOnClickListener {
+
+            for (i in 0 until chipGroup1.childCount) {
+                val chip = chipGroup1.getChildAt(i) as Chip
+                chip.isChecked = false
+            }
+
+            category_id = ""
+
+            GlobalScope.launch(Dispatchers.IO) {
+
+
+                val client = OkHttpClient()
+                val mediaType = "text/plain".toMediaType()
+                val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("language_id", language_id)
+                    .addFormDataPart("category_id", category_id)
+                    .build()
+
+                val request = Request.Builder()
+                    .url("https://statusstory.digiauxilio.com/index.php/api/get_post_image_all")
+                    .post(requestBody)
+                    .build()
+
+                try {
+                    val response = client.newCall(request).execute()
+
+                    val responseBody = response.body?.string()
+
+                    // Use the response as needed (e.g., update UI, handle success/failure)
+                    val registrationResponse = parseRegistrationResponseImage(responseBody)
+
+                    // Example: Log the message
+
+
+                    // Example: Log the response body
+                    Log.d("response", registrationResponse.toString())
+
+                    withContext(Dispatchers.Main) {
 
 
 
 
+                        if (registrationResponse.status == 1) {
+
+                            val recyclerView: RecyclerView = findViewById(R.id.khokho1)
+                            recyclerView.layoutManager = GridLayoutManager(this@Home3,2)
+
+                            // Create and set the adapter
+                            val imageAdapter = ImageAdapter(this@Home3,
+                                registrationResponse.data as MutableList<ImageRequest>
+                            )
+                            recyclerView.adapter = imageAdapter
+
+
+
+                        } else {
+
+
+                        }
+
+
+
+
+
+
+                    }
+
+
+//                                // Close the response to release resources
+                    response.close()
+
+
+                } catch (e: Exception) {
+                    // Handle network request failure
+                    e.printStackTrace()
+                }
+            }
+
+
+        }
 
 
 
 
 
         val horizontalScrollView = findViewById<HorizontalScrollView>(R.id.horizontalScrollView)
-        val chipGroup1 = findViewById<ChipGroup>(R.id.horizontalChipGroup1)
+
 
 
         val random = Random()
@@ -118,6 +235,7 @@ class Home3 : AppCompatActivity() {
 
           // category call
         GlobalScope.launch(Dispatchers.IO) {
+
             val client = OkHttpClient()
             val mediaType = "text/plain".toMediaType()
             val request = Request.Builder()
@@ -142,6 +260,8 @@ class Home3 : AppCompatActivity() {
 
                 withContext(Dispatchers.Main){
                     if(registrationResponse.status==1){
+
+
 
 
 //                                // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
@@ -169,6 +289,8 @@ class Home3 : AppCompatActivity() {
                             chip.setOnCheckedChangeListener { buttonView, isChecked ->
                                 // Handle chip selection here
                                 if (isChecked) {
+
+
                                     chip.setChipBackgroundColorResource(R.color.text)
                                     val textColorWhite = resources.getColor(android.R.color.black, null)
                                     chip.setTextColor(textColorWhite)
@@ -245,6 +367,7 @@ class Home3 : AppCompatActivity() {
 //                                // Close the response to release resources
                                             response.close()
 
+
                                         } catch (e: Exception) {
                                             // Handle network request failure
                                             e.printStackTrace()
@@ -254,6 +377,7 @@ class Home3 : AppCompatActivity() {
 
 
                                 } else if(!isChecked) {
+
 
                                     val randomColorRes = colorList[random.nextInt(colorList.size)]
                                     chip.setChipBackgroundColorResource(randomColorRes)
@@ -329,6 +453,7 @@ class Home3 : AppCompatActivity() {
 //                                // Close the response to release resources
                                             response.close()
 
+
                                         } catch (e: Exception) {
                                             // Handle network request failure
                                             e.printStackTrace()
@@ -369,6 +494,8 @@ class Home3 : AppCompatActivity() {
 
         // image call
         GlobalScope.launch(Dispatchers.IO) {
+
+
             val client = OkHttpClient()
             val mediaType = "text/plain".toMediaType()
             val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
@@ -397,7 +524,7 @@ class Home3 : AppCompatActivity() {
 
                 withContext(Dispatchers.Main) {
 
-
+                    constraint.visibility = View.VISIBLE
 
 
                         if (registrationResponse.status == 1) {
@@ -429,6 +556,7 @@ class Home3 : AppCompatActivity() {
 //                                // Close the response to release resources
                 response.close()
 
+
             } catch (e: Exception) {
                 // Handle network request failure
                 e.printStackTrace()
@@ -447,6 +575,53 @@ class Home3 : AppCompatActivity() {
 
 
 
+
+    }
+
+
+
+    private fun loadInterAd() {
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+
+                mInterstitialAd = null
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+
+                mInterstitialAd = interstitialAd
+                if (mInterstitialAd != null) {
+                    mInterstitialAd?.fullScreenContentCallback  = object : FullScreenContentCallback(){
+                        override fun onAdClicked() {
+                            super.onAdClicked()
+                        }
+
+                        override fun onAdDismissedFullScreenContent() {
+                            super.onAdDismissedFullScreenContent()
+                        }
+
+                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                            super.onAdFailedToShowFullScreenContent(p0)
+                        }
+
+                        override fun onAdImpression() {
+                            super.onAdImpression()
+                        }
+
+                        override fun onAdShowedFullScreenContent() {
+                            super.onAdShowedFullScreenContent()
+                        }
+
+                    }
+
+                    mInterstitialAd?.show(this@Home3)
+                } else {
+
+                }
+            }
+        })
 
     }
 

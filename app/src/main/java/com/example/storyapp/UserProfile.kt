@@ -43,6 +43,9 @@ import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
+import android.view.View
+import com.github.ybq.android.spinkit.SpinKitView
+import com.github.ybq.android.spinkit.style.Wave
 import com.squareup.picasso.Picasso
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
@@ -74,10 +77,16 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     private lateinit var changePassword: TextView
     private var userId: Int = 0
 
+    private lateinit var loadingDialog: LoadingDialog
+
+    private lateinit var email: String
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
+
+        loadingDialog = LoadingDialog(this)
 
 
         userName = findViewById(R.id.userNameDisplay)
@@ -95,6 +104,14 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         setImageBtn = findViewById(R.id.changeUserProfileImage)
         changePassword = findViewById(R.id.changePassword)
 
+        val backBtn = findViewById<Button>(R.id.backBtn7)
+
+        backBtn.setOnClickListener {
+
+            val intent = Intent(this@UserProfile,Home3::class.java)
+            startActivity(intent)
+        }
+
 
         val sh = getSharedPreferences("MySharedPref", MODE_PRIVATE)
         val name = sh.getString("name", "")
@@ -102,7 +119,7 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
          dob = sh.getString("dob", "").toString()
         var gender = sh.getInt("gender", 1)
         var image = sh.getString("image","")
-        val email = sh.getString("email","")
+         email = sh.getString("email","").toString()
 
         userName.setText(name)
         dateDisplay.setText(dob)
@@ -118,70 +135,8 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         }
         deleteUser.setOnClickListener {
 
-            if(checkForInternet(this)){
+            showYesNoDialogDelete()
 
-                GlobalScope.launch(Dispatchers.IO) {
-                    val client = OkHttpClient()
-                    val mediaType = "text/plain".toMediaType()
-                    val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-                        .addFormDataPart("email", email.toString())
-                        .build()
-
-                    val request = Request.Builder()
-                        .url("https://statusstory.digiauxilio.com/index.php/api/deleteUser")
-                        .post(requestBody)
-                        .build()
-
-                    try {
-                        val response = client.newCall(request).execute()
-
-                        val responseBody = response.body?.string()
-
-                        // Use the response as needed (e.g., update UI, handle success/failure)
-                        val registrationResponse = parseRegistrationResponse(responseBody)
-
-                        // Example: Log the message
-
-
-                        // Example: Log the response body
-                        Log.d("response", registrationResponse.toString())
-
-
-                        if(registrationResponse.status==1){
-
-                            // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
-
-                            (showDialogSuccessDelete(this@UserProfile,"User deleted successfully","DELETED SUCCESS"))
-
-                            val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
-                            val myEdit = sharedPreferences.edit()
-                            myEdit.clear()
-                            // write all the data entered by the user in SharedPreference and apply
-
-                            myEdit.apply()
-
-
-
-
-
-                        }else if(registrationResponse.status==2){
-
-                            showDialog(this@UserProfile,"Some error occured while deleting","DELETE FAILED")
-                        }
-
-
-//                                // Close the response to release resources
-                        response.close()
-
-                    } catch (e: Exception) {
-                        // Handle network request failure
-                        e.printStackTrace()
-                    }
-                }
-
-            }else{
-                Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
-            }
 
         }
 
@@ -193,6 +148,7 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         }
 
         setImageBtn.setOnClickListener{
+            showLoadingDialog()
 
             if (hasPermissions(android.Manifest.permission.CAMERA) || hasPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     showActionSheet()
@@ -209,13 +165,17 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         if(gender==1){
             maleSet.isChecked = true
             femaleSet.isChecked = false
-            otherSet.isClickable= false
+            otherSet.isChecked= false
 
-        }else{
+        }else if(gender==2){
             femaleSet.isChecked = true
             maleSet.isChecked = false
-            otherSet.isClickable = false
+            otherSet.isChecked = false
 
+        }else{
+            femaleSet.isChecked = false
+            maleSet.isChecked = false
+            otherSet.isChecked = true
         }
 
         genderSet.setOnCheckedChangeListener { group, checkedId ->
@@ -230,8 +190,9 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
                     femaleSet.isChecked = true
                 }
                 R.id.radioButton3 -> {
-                    maleSet.isChecked = true
-                    gender = 1
+                    gender = 3
+                    otherSet.isChecked = true
+
                 }
             }
         }
@@ -242,9 +203,11 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
         saveEditData.setOnClickListener {
 
-
+showLoadingDialog()
             if(checkForInternet(this)){
+
                 GlobalScope.launch(Dispatchers.IO) {
+
                     val client = OkHttpClient()
                     val mediaType = "text/plain".toMediaType()
                     val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
@@ -273,8 +236,10 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
                         // Example: Log the response body
                         Log.d("response", registrationResponse.toString())
 
-
+dismissLoadingDialog()
                         if(registrationResponse.status==1){
+
+
 
                             // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
 
@@ -303,6 +268,7 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 //                                // Close the response to release resources
                         response.close()
 
+
                     } catch (e: Exception) {
                         // Handle network request failure
                         e.printStackTrace()
@@ -325,6 +291,15 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
 
+        // Set the minimum age allowed (12 years)
+        val minimumAge = 12
+        val minDateCalendar = Calendar.getInstance()
+        minDateCalendar.add(Calendar.YEAR, -minimumAge)
+
+        // Set the maximum date allowed (12 years ago from the current date)
+        val maxDateCalendar = Calendar.getInstance()
+        maxDateCalendar.add(Calendar.YEAR, -minimumAge)
+
         // Create a DatePickerDialog with the current date as the default
         val datePickerDialog = DatePickerDialog(
             this,
@@ -334,9 +309,16 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
             calendar.get(Calendar.DAY_OF_MONTH)
         )
 
+        // Set the minimum and maximum date for the DatePicker
+
+        datePickerDialog.datePicker.maxDate = maxDateCalendar.timeInMillis
+
         // Show the date picker dialog
         datePickerDialog.show()
     }
+
+
+
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         val selectedDate = Calendar.getInstance()
@@ -351,6 +333,27 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
         dob = formattedDate
     }
+//    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+//        val selectedDate = Calendar.getInstance()
+//        selectedDate.set(year, month, dayOfMonth)
+//
+//        // Calculate the minimum allowed date (12 years ago)
+//        val minAllowedDate = Calendar.getInstance()
+//        minAllowedDate.add(Calendar.YEAR, -12)
+//
+//        // Check if the selected date is at least 12 years ago
+//
+//            // Format the selected date as "dd-MM-yyyy"
+//            val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+//            val formattedDate = dateFormat.format(selectedDate.time)
+//
+//            // Display the selected date
+//            dateDisplay.setText(formattedDate)
+//
+//            dob = formattedDate
+//
+//    }
+
     private fun parseRegistrationResponse(responseBody: String?): ApiResponse {
         // Use Gson to parse the response body into a RegistrationResponse object
         return Gson().fromJson(responseBody, ApiResponse::class.java)
@@ -474,6 +477,9 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
                         ActivityCompat.requestPermissions(this, arrayOf(cameraPermission), REQUEST_IMAGE_CAPTURE)
                     }
                 }
+                2 ->{
+                    dismissLoadingDialog()
+                }
             }
         }
         builder.show()
@@ -560,6 +566,8 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         if(checkForInternet(this)){
             GlobalScope.launch(Dispatchers.IO) {
 
+
+
                 val client = OkHttpClient()
                 val mediaType = "text/plain".toMediaType()
 
@@ -597,8 +605,9 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
                     // Example: Log the response body
                     Log.d("response", registrationResponse.toString())
 
-
+dismissLoadingDialog()
                     if(registrationResponse.status==1){
+
 
                         // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
 
@@ -620,6 +629,7 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
 
                     }else if(registrationResponse.status==2){
+
 
                         showDialog(this@UserProfile,"Some error occured while upload","UPDATE FAILED")
                     }
@@ -646,7 +656,7 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
         // Set the dialog title and message
         alertDialogBuilder.setTitle("Confirmation")
-        alertDialogBuilder.setMessage("Do you want to proceed?")
+        alertDialogBuilder.setMessage("Do you want to logout?")
 
         // Set positive button and its click listener
         alertDialogBuilder.setPositiveButton("Yes") { dialog: DialogInterface, _: Int ->
@@ -677,5 +687,116 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
         // Create and show the alert dialog
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
+    }
+
+    private fun dismissLoadingDialog() {
+        loadingDialog.dismiss()
+    }
+    private fun showLoadingDialog() {
+        loadingDialog.show()
+        val spinKitView = loadingDialog.findViewById<SpinKitView>(R.id.spin_kit)
+        spinKitView.setIndeterminateDrawable(Wave())
+    }
+
+    private fun showYesNoDialogDelete() {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+
+        // Set the dialog title and message
+        alertDialogBuilder.setTitle("Confirmation")
+        alertDialogBuilder.setMessage("Are you sure want to delete your profile?")
+
+        // Set positive button and its click listener
+        alertDialogBuilder.setPositiveButton("Yes") { dialog: DialogInterface, _: Int ->
+            // Do something when "Yes" is clicked
+            dialog.dismiss() // Close the dialog
+            // Add your logic here for the "Yes" option
+            deleteProfile()
+
+        }
+
+        // Set negative button and its click listener
+        alertDialogBuilder.setNegativeButton("No") { dialog: DialogInterface, _: Int ->
+            // Do something when "No" is clicked
+            dialog.dismiss() // Close the dialog
+            // Add your logic here for the "No" option
+        }
+
+        // Create and show the alert dialog
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+    }
+
+    private fun deleteProfile(){
+
+        showLoadingDialog()
+
+        if(checkForInternet(this)){
+
+            GlobalScope.launch(Dispatchers.IO) {
+
+                val client = OkHttpClient()
+                val mediaType = "text/plain".toMediaType()
+                val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("email", email.toString())
+                    .build()
+
+                val request = Request.Builder()
+                    .url("https://statusstory.digiauxilio.com/index.php/api/deleteUser")
+                    .post(requestBody)
+                    .build()
+
+                try {
+                    val response = client.newCall(request).execute()
+
+                    val responseBody = response.body?.string()
+
+                    // Use the response as needed (e.g., update UI, handle success/failure)
+                    val registrationResponse = parseRegistrationResponse(responseBody)
+
+                    // Example: Log the message
+
+
+                    // Example: Log the response body
+                    Log.d("response", registrationResponse.toString())
+
+                    dismissLoadingDialog()
+                    if(registrationResponse.status==1){
+
+
+                        // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
+
+                        (showDialogSuccessDelete(this@UserProfile,"User deleted successfully","DELETED SUCCESS"))
+
+                        val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+                        val myEdit = sharedPreferences.edit()
+                        myEdit.clear()
+                        // write all the data entered by the user in SharedPreference and apply
+
+                        myEdit.apply()
+
+
+
+
+
+                    }else if(registrationResponse.status==2){
+
+
+                        showDialog(this@UserProfile,"Some error occured while deleting","DELETE FAILED")
+                    }
+
+
+//                                // Close the response to release resources
+                    response.close()
+
+
+                } catch (e: Exception) {
+                    // Handle network request failure
+                    e.printStackTrace()
+                }
+            }
+
+        }else{
+            Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
+        }
     }
 }

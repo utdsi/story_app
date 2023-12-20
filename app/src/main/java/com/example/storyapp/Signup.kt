@@ -10,11 +10,15 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.github.ybq.android.spinkit.SpinKitView
+import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -34,15 +38,39 @@ class Signup : AppCompatActivity() {
     private lateinit var name: EditText
     private lateinit var password: EditText
     private lateinit var loginRedirect: TextView
+    private lateinit var loadingDialog: LoadingDialog
+    private lateinit var check: ImageView
+    private lateinit var unCheck: ImageView
+    private lateinit var emailValue: String
+    private lateinit var passwordValue: String
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
+        loadingDialog = LoadingDialog(this)
+
         email = findViewById(R.id.registerEmail)
         name = findViewById(R.id.registerName)
         password = findViewById(R.id.registerPassword)
         loginRedirect = findViewById(R.id.sLRedirect)
+        check = findViewById(R.id.checkBox1)
+        unCheck = findViewById(R.id.unCheckBox1)
+
+        check.setOnClickListener {
+
+            unCheck.visibility = View.VISIBLE
+
+            check.visibility = View.GONE
+        }
+
+        unCheck.setOnClickListener {
+
+            check.visibility = View.VISIBLE
+
+            unCheck.visibility = View.GONE
+        }
+
         val backBtn = findViewById<Button>(R.id.backBtn3)
         backBtn.setOnClickListener {
 
@@ -62,14 +90,16 @@ class Signup : AppCompatActivity() {
 
 
         registerBtn.setOnClickListener {
-            val emailValue = email.text.toString()
+            showLoadingDialog()
+            emailValue = email.text.toString()
             val nameValue = name.text.toString()
-            val passwordValue = password.text.toString()
+            passwordValue = password.text.toString()
 
 
             if (checkForInternet(this)) {
 
                 if(emailValue.isEmpty() || nameValue.isEmpty() || passwordValue.isEmpty()){
+                    dismissLoadingDialog()
                     Toast.makeText(this, "Please enter all the details", Toast.LENGTH_SHORT).show()
                 }else{
                     val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
@@ -110,6 +140,7 @@ class Signup : AppCompatActivity() {
 
                                 // Example: Log the response body
                                Log.d("response", registrationResponse.toString())
+                                dismissLoadingDialog()
 
 //
                                 if(registrationResponse.status==1){
@@ -133,11 +164,14 @@ class Signup : AppCompatActivity() {
                         }
                     }else {
 
+                            dismissLoadingDialog()
+
                             Toast.makeText(this, "Password should be minimum of 6 characters ", Toast.LENGTH_SHORT).show()
                     }
 
 
                     }else{
+                        dismissLoadingDialog()
                         Toast.makeText(this, "Please enter the correct format of email ", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -145,6 +179,7 @@ class Signup : AppCompatActivity() {
 
 
             } else {
+                dismissLoadingDialog()
                 Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
             }
         }
@@ -230,7 +265,23 @@ class Signup : AppCompatActivity() {
                 .setPositiveButton("OK") { dialog, _ ->
                     // Dismiss the dialog when the "OK" button is clicked
                     dialog.dismiss()
+
+
+                    if(check.visibility == View.VISIBLE){
+                        val sharedPreferences = getSharedPreferences("showDetails", Context.MODE_PRIVATE)
+
+                        val editor = sharedPreferences.edit()
+
+
+                        editor.putString("showEmail", emailValue)
+
+
+                        editor.putString("showPassword", passwordValue)
+
+                        editor.apply()
+                    }
                     val intent  = Intent(this@Signup,Login::class.java)
+
                     startActivity(intent)
                 }
 
@@ -242,5 +293,13 @@ class Signup : AppCompatActivity() {
     override fun onBackPressed() {
         // Do nothing to restrict the back button
         // You can add your custom logic here if needed
+    }
+    private fun dismissLoadingDialog() {
+        loadingDialog.dismiss()
+    }
+    private fun showLoadingDialog() {
+        loadingDialog.show()
+        val spinKitView = loadingDialog.findViewById<SpinKitView>(R.id.spin_kit)
+        spinKitView.setIndeterminateDrawable(Wave())
     }
 }

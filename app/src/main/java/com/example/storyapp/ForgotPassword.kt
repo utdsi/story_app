@@ -14,6 +14,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.github.ybq.android.spinkit.SpinKitView
+import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,6 +30,7 @@ class ForgotPassword : AppCompatActivity() {
 
     private lateinit var email: EditText
     private lateinit var backBtn: Button
+    private lateinit var loadingDialog: LoadingDialog
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +38,7 @@ class ForgotPassword : AppCompatActivity() {
 
         email = findViewById(R.id.chPassword)
         backBtn = findViewById(R.id.backBtn4)
+        loadingDialog = LoadingDialog(this)
 
         val submitBtn = findViewById<Button>(R.id.passwordChangeSubmitBtn)
 
@@ -52,6 +56,7 @@ class ForgotPassword : AppCompatActivity() {
             if(checkForInternet(this)){
 
                 if(!emailValue.isEmpty()){
+                    showLoadingDialog()
                     GlobalScope.launch(Dispatchers.IO) {
                         val client = OkHttpClient()
                         val mediaType = "text/plain".toMediaType()
@@ -78,7 +83,7 @@ class ForgotPassword : AppCompatActivity() {
 //                            // Example: Log the response body
                             Log.d("response", registrationResponse.toString())
 
-
+dismissLoadingDialog()
                             if(registrationResponse.status==1){
 
                                 showDialogSuccessUpdate(this@ForgotPassword,"Password successfully sent to your email","UPDATE SUCCESS")
@@ -104,12 +109,14 @@ class ForgotPassword : AppCompatActivity() {
 
 
                 }else{
+                    dismissLoadingDialog()
                     Toast.makeText(this@ForgotPassword,"Please fill all the details",Toast.LENGTH_SHORT).show()
                 }
 
 
 
             }else{
+                dismissLoadingDialog()
                 Toast.makeText(this@ForgotPassword,"Internet Connection Unavailable",Toast.LENGTH_SHORT).show()
             }
         }
@@ -189,5 +196,17 @@ class ForgotPassword : AppCompatActivity() {
             dialog.show()
         }
     }
+
+
+    private fun dismissLoadingDialog() {
+        loadingDialog.dismiss()
+    }
+    private fun showLoadingDialog() {
+        loadingDialog.show()
+        val spinKitView = loadingDialog.findViewById<SpinKitView>(R.id.spin_kit)
+        spinKitView.setIndeterminateDrawable(Wave())
+    }
+
+
 
 }

@@ -134,18 +134,32 @@
 
 
 
-            <CheckBox
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="start">
+
+            <ImageView
+                android:id="@+id/checkBox1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/check"/>
+
+            <ImageView
+                android:id="@+id/unCheckBox1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/uncheck"
+                android:visibility="gone"/>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Remember me"
-                android:textColor="@color/text"
-                android:textSize="15dp"
-                android:checked="true"
-                android:layout_gravity="start"
-                android:theme="@style/MyCheckBox"
-                android:buttonTint="@color/eye"
-                android:layout_marginBottom="15dp"
-                />
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/text"/>
+        </LinearLayout>
 
 
 
