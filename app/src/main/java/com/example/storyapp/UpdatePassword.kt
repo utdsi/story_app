@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -32,6 +32,7 @@ class UpdatePassword : AppCompatActivity() {
     private lateinit var submitBtn: Button
     private var email: String? = null
     private lateinit var loadingDialog: LoadingDialog
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,12 +49,12 @@ class UpdatePassword : AppCompatActivity() {
 
         backBtn.setOnClickListener {
 
-            val intent = Intent(this@UpdatePassword,UserProfile::class.java)
+            val intent = Intent(this@UpdatePassword, UserProfile::class.java)
             startActivity(intent)
         }
 
         val sh = getSharedPreferences("MySharedPref", MODE_PRIVATE)
-         email = sh.getString("email","")
+        email = sh.getString("email", "")
 
 
         displayEmail.setText(email)
@@ -64,16 +65,14 @@ class UpdatePassword : AppCompatActivity() {
             val newPasswordValue = newPassword.text.toString()
             val oldPasswordValue = oldPassword.text.toString()
 
-            if(newPasswordValue.isEmpty() || oldPasswordValue.isEmpty()){
+            if (newPasswordValue.isEmpty() || oldPasswordValue.isEmpty()) {
                 Toast.makeText(this, "Please fill all the rows", Toast.LENGTH_SHORT).show()
-            }else{
+            } else {
                 showSimpleDialog()
             }
 
 
-
         }
-
 
 
     }
@@ -130,7 +129,7 @@ class UpdatePassword : AppCompatActivity() {
                     // Dismiss the dialog when the "OK" button is clicked
                     dialog.dismiss()
 
-                    val intent = Intent(this@UpdatePassword,UserProfile::class.java)
+                    val intent = Intent(this@UpdatePassword, UserProfile::class.java)
                     startActivity(intent)
                 }
 
@@ -140,6 +139,7 @@ class UpdatePassword : AppCompatActivity() {
         }
 
     }
+
     private fun parseRegistrationResponse(responseBody: String?): ApiResponse {
         // Use Gson to parse the response body into a RegistrationResponse object
         return Gson().fromJson(responseBody, ApiResponse::class.java)
@@ -154,7 +154,7 @@ class UpdatePassword : AppCompatActivity() {
         builder.setPositiveButton("Yes") { dialog, which ->
             // Handle Yes button click
 
-             updatePassword()
+            updatePassword()
             // ...
             dialog.dismiss()
 
@@ -171,73 +171,80 @@ class UpdatePassword : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun updatePassword(){
+    private fun updatePassword() {
 
         showLoadingDialog()
-        if(checkForInternet(this)){
+        if (checkForInternet(this)) {
             val newPasswordValue = newPassword.text.toString()
             val oldPasswordValue = oldPassword.text.toString()
 
-            if(newPasswordValue.isEmpty() || oldPasswordValue.isEmpty()){
+            if (newPasswordValue.isEmpty() || oldPasswordValue.isEmpty()) {
                 Toast.makeText(this, "Please fill all the rows", Toast.LENGTH_SHORT).show()
-            }else{
+            } else {
 
 
-                    GlobalScope.launch(Dispatchers.IO) {
-                        val client = OkHttpClient()
-                        val mediaType = "text/plain".toMediaType()
-                        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-                            .addFormDataPart("email", email.toString())
-                            .addFormDataPart("old_password", oldPasswordValue.toString())
-                            .addFormDataPart("new_password", newPasswordValue.toString())
-                            .build()
+                GlobalScope.launch(Dispatchers.IO) {
+                    val client = OkHttpClient()
+                    val mediaType = "text/plain".toMediaType()
+                    val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+                        .addFormDataPart("email", email.toString())
+                        .addFormDataPart("old_password", oldPasswordValue.toString())
+                        .addFormDataPart("new_password", newPasswordValue.toString())
+                        .build()
 
-                        val request = Request.Builder()
-                            .url("https://statusstory.digiauxilio.com/index.php/api/updatePassword")
-                            .post(requestBody)
-                            .build()
+                    val request = Request.Builder()
+                        .url("https://statusstory.digiauxilio.com/index.php/api/updatePassword")
+                        .post(requestBody)
+                        .build()
 
-                        try {
-                            val response = client.newCall(request).execute()
+                    try {
+                        val response = client.newCall(request).execute()
 
-                            val responseBody = response.body?.string()
+                        val responseBody = response.body?.string()
 
 //                            // Use the response as needed (e.g., update UI, handle success/failure)
-                           val registrationResponse = parseRegistrationResponse(responseBody)
+                        val registrationResponse = parseRegistrationResponse(responseBody)
 //
 //                            // Example: Log the message
 //
 //
 //                            // Example: Log the response body
-                            Log.d("response", registrationResponse.toString())
+                        Log.d("response", registrationResponse.toString())
 
-                            dismissLoadingDialog()
-                            if(registrationResponse.status==1){
+                        dismissLoadingDialog()
+                        if (registrationResponse.status == 1) {
 
-                                showDialogSuccessUpdate(this@UpdatePassword,"Password updated successfully","UPDATE SUCCESS")
+                            showDialogSuccessUpdate(
+                                this@UpdatePassword,
+                                "Password updated successfully",
+                                "UPDATE SUCCESS"
+                            )
 
 //                                // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
 
 
+                        } else if (registrationResponse.status == 2) {
 
-                            }else if(registrationResponse.status==2){
-
-                                showDialog(this@UpdatePassword,"Some error occured while updating","UPDATE FAILED")
-                            }
+                            showDialog(
+                                this@UpdatePassword,
+                                "Some error occured while updating",
+                                "UPDATE FAILED"
+                            )
+                        }
 
 
 ////                                // Close the response to release resources
-                            response.close()
+                        response.close()
 
-                        } catch (e: Exception) {
-                            // Handle network request failure
-                            e.printStackTrace()
-                        }
+                    } catch (e: Exception) {
+                        // Handle network request failure
+                        e.printStackTrace()
                     }
-        }
+                }
+            }
 
 
-        }else{
+        } else {
 
             Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
         }
@@ -254,7 +261,7 @@ class UpdatePassword : AppCompatActivity() {
                 .setPositiveButton("OK") { dialog, _ ->
                     // Dismiss the dialog when the "OK" button is clicked
                     dialog.dismiss()
-                    val intent  = Intent(this@UpdatePassword,Login::class.java)
+                    val intent = Intent(this@UpdatePassword, Login::class.java)
                     startActivity(intent)
                 }
 
@@ -263,9 +270,11 @@ class UpdatePassword : AppCompatActivity() {
             dialog.show()
         }
     }
+
     private fun dismissLoadingDialog() {
         loadingDialog.dismiss()
     }
+
     private fun showLoadingDialog() {
         loadingDialog.show()
         val spinKitView = loadingDialog.findViewById<SpinKitView>(R.id.spin_kit)

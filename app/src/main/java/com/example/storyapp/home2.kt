@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.digiauxilio.storyapp.R
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -44,77 +45,7 @@ class home2 : AppCompatActivity() {
         //Log.d("list",list.toString())
         var list: List<LanguageRequest> = mutableListOf()
 
-        GlobalScope.launch(Dispatchers.IO) {
 
-            spinKit.visibility = View.VISIBLE
-
-            val client = OkHttpClient()
-            val mediaType = "text/plain".toMediaType()
-            val request = Request.Builder()
-                .url("https://statusstory.digiauxilio.com/index.php/api/languageList")
-                .build()
-
-
-
-            try {
-                val response = client.newCall(request).execute()
-
-                val responseBody = response.body?.string()
-
-//                            // Use the response as needed (e.g., update UI, handle success/failure)
-                val registrationResponse = parseRegistrationResponse(responseBody)
-//
-//                            // Example: Log the message
-//
-//
-//                            // Example: Log the response body
-                Log.d("response", registrationResponse?.data?.toString().toString())
-
-                withContext(Dispatchers.Main){
-                    if(registrationResponse.status==1){
-
-
-//                                // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
-                        list = registrationResponse?.data!! // Adjust this line based on your data structure
-                        recyclerView.adapter = LanguageAdapter(this@home2,list as MutableList<LanguageRequest>)
-                        //recyclerView.layoutManager = LinearLayoutManager(this@home2)
-
-                        val layoutManager = LinearLayoutManager(this@home2, LinearLayoutManager.VERTICAL, false)
-                       recyclerView.layoutManager = layoutManager
-//
-                        val snapHelper = LinearSnapHelper()
-                        snapHelper.attachToRecyclerView(recyclerView)
-//
-//                        // Set up your adapter
-                        val adapter = LanguageAdapter(this@home2,list as MutableList<LanguageRequest>)
-                        recyclerView.adapter = adapter
-//
-//
-
-
-
-
-                    }else if(registrationResponse.status==2){
-
-                        //showDialog(this@UpdatePassword,"Some error occured while updating","UPDATE FAILED")
-
-
-                    }
-                }
-
-
-
-                                // Close the response to release resources
-                response.close()
-
-                spinKit.visibility = View.GONE
-
-
-            } catch (e: Exception) {
-                // Handle network request failure
-                e.printStackTrace()
-            }
-        }
 
 
 
@@ -160,6 +91,78 @@ class home2 : AppCompatActivity() {
 
 
 
+        }
+
+        GlobalScope.launch(Dispatchers.IO) {
+
+            spinKit.visibility = View.VISIBLE
+
+            val client = OkHttpClient()
+            val mediaType = "text/plain".toMediaType()
+            val request = Request.Builder()
+                .url("https://statusstory.digiauxilio.com/index.php/api/languageList")
+                .build()
+
+
+
+            try {
+                val response = client.newCall(request).execute()
+
+                val responseBody = response.body?.string()
+
+//                            // Use the response as needed (e.g., update UI, handle success/failure)
+                val registrationResponse = parseRegistrationResponse(responseBody)
+//
+//                            // Example: Log the message
+//
+//
+//                            // Example: Log the response body
+                Log.d("response", registrationResponse?.data?.toString().toString())
+
+                withContext(Dispatchers.Main){
+                    if(registrationResponse.status==1){
+
+
+//                                // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
+                        list = registrationResponse?.data!! // Adjust this line based on your data structure
+                        recyclerView.adapter = LanguageAdapter(this@home2,list as MutableList<LanguageRequest>)
+                        //recyclerView.layoutManager = LinearLayoutManager(this@home2)
+
+                        val layoutManager = LinearLayoutManager(this@home2, LinearLayoutManager.VERTICAL, false)
+                        recyclerView.layoutManager = layoutManager
+//
+                        val snapHelper = LinearSnapHelper()
+                        snapHelper.attachToRecyclerView(recyclerView)
+//
+//                        // Set up your adapter
+                        val adapter = LanguageAdapter(this@home2,list as MutableList<LanguageRequest>)
+                        recyclerView.adapter = adapter
+//
+//
+
+
+
+
+                    }else if(registrationResponse.status==2){
+
+                        //showDialog(this@UpdatePassword,"Some error occured while updating","UPDATE FAILED")
+
+
+                    }
+                }
+
+
+
+                // Close the response to release resources
+                response.close()
+
+                spinKit.visibility = View.GONE
+
+
+            } catch (e: Exception) {
+                // Handle network request failure
+                e.printStackTrace()
+            }
         }
 
 

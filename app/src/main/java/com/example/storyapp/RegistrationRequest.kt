@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 data class RegistrationRequest(
     val user_id: Int,
@@ -10,7 +10,7 @@ data class RegistrationRequest(
     val profile_status: Int? = null,
     val profile_pic: String? = null,
 
-)
+    )
 
 data class ApiResponse(
     val status: Int,
@@ -19,10 +19,10 @@ data class ApiResponse(
 )
 
 data class LanguageRequest(
-    var languages_id : Int,
+    var languages_id: Int,
     var name: String,
 
-)
+    )
 
 data class LanguageApiResponse(
     var status: Int,
@@ -39,6 +39,7 @@ data class CategoryApiResponse(
     var data: List<CategoryRequest>?
 
 )
+
 data class CategoryRequest(
     val category_id: Int,
     val name: String
@@ -47,8 +48,10 @@ data class CategoryRequest(
 data class ImageApiResponse(
     var status: Int,
     var message: String,
+    var total_page: Int,
     var data: List<ImageRequest>?
 )
+
 data class ImageRequest(
 
     val post_image_id: Int,

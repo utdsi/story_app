@@ -1,78 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ForgotPassword"
     android:background="@drawable/login"
     android:orientation="vertical"
-    android:padding="15dp">
+    android:padding="15dp"
+    tools:context=".ForgotPassword">
 
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/backBtn5"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:background="@drawable/backbutton"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/backbutton" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/backBtn5"
+        android:layout_marginLeft="15dp"
         android:layout_marginTop="60dp"
+        android:layout_marginRight="15dp"
         android:background="@drawable/loginback"
         android:orientation="vertical"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:padding="15dp"
-        >
+        android:padding="15dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:text="Otp Verification"
-            android:textColor="#f6b93b"
             android:textAlignment="center"
-            android:textStyle="bold"
+            android:textColor="#f6b93b"
             android:textSize="25dp"
-            android:layout_marginBottom="20dp"/>
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Enter the OTP"
-            android:textColor="@color/white"
             android:textAlignment="center"
+            android:textColor="@color/white"
 
-            android:textSize="15dp"
-            />
+            android:textSize="15dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
+
             <com.chaos.view.PinView
                 android:id="@+id/pinview"
-                app:itemCount="4"
-                app:itemWidth="50dp"
-                app:itemHeight="50dp"
-                android:gravity="center"
-                android:layout_marginTop="30dp"
+                style="@style/PinWidget.PinView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:itemBackground="@color/white"
                 android:layout_gravity="center|center_horizontal"
                 android:layout_marginLeft="45dp"
-                android:inputType="number"
-                android:cursorVisible="true"
-                app:hideLineWhenFilled="false"
-                app:itemRadius="10dp"
-                style="@style/PinWidget.PinView"
+                android:layout_marginTop="30dp"
                 android:layout_marginBottom="20dp"
+                android:cursorVisible="true"
+                android:gravity="center"
+                android:inputType="number"
+                android:itemBackground="@color/white"
+                app:hideLineWhenFilled="false"
+                app:itemCount="4"
+                app:itemHeight="50dp"
+                app:itemRadius="10dp"
+                app:itemWidth="50dp"
 
                 ></com.chaos.view.PinView>
         </LinearLayout>
@@ -80,69 +78,55 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:text="00:120 Sec"
             android:textAlignment="center"
-            android:textColor="@color/text"
-            android:layout_marginBottom="20dp"
-            />
-
+            android:textColor="@color/text" />
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
             android:layout_marginBottom="20dp"
-            >
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Didn't receive code ? "
-                android:textColor="@color/text"/>
+                android:textColor="@color/text" />
+
             <TextView
                 android:id="@+id/loginRedirect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="  Re-send"
-                android:textColor="@color/eye"/>
+                android:textColor="@color/eye" />
         </LinearLayout>
-
-
-
-
-
-
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginBottom="30dp"
             android:gravity="center"
-            android:layout_marginBottom="30dp">
+            android:orientation="vertical">
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/submitBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/registerbtn"
+                android:paddingStart="40dp"
+                android:paddingTop="7dp"
+                android:paddingEnd="40dp"
+                android:paddingBottom="7dp"
                 android:text="Submit"
                 android:textAllCaps="false"
                 android:textSize="20dp"
-                android:paddingStart="40dp"
-                android:paddingEnd="40dp"
-                android:paddingTop="7dp"
-                android:paddingBottom="7dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
         </LinearLayout>
-
-
-
-
-
-
-
 
 
     </LinearLayout>

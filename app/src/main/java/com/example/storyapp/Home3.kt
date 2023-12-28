@@ -1,10 +1,11 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import com.digiauxilio.storyapp.R
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -18,12 +19,14 @@ import android.widget.GridView
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -57,35 +60,69 @@ class Home3 : AppCompatActivity() {
     private var mInterstitialAd: InterstitialAd? = null
     private lateinit var constraint: ConstraintLayout
     private lateinit var homeIcon: ImageView
+    private var language_id: String = ""
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: ImageAdapter
+    private lateinit var layoutManager: LinearLayoutManager
+    private var page = 1
+    private var totalPage: Int = 0
+    private lateinit var progressBar: ProgressBar
 
 
-    @SuppressLint("MissingInflatedId", "WrongViewCast")
+    @SuppressLint("MissingInflatedId", "WrongViewCast", "SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        var modalList = ArrayList<Modal>()
+
 
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home3)
 
-        loadInterAd()
+        //loadInterAd()
 
 
 
 
-       constraint = findViewById(R.id.constraint)
+        // image call
+        recyclerView = findViewById(R.id.khokho1)
+
+
+        layoutManager = GridLayoutManager(this, 2)
+
+        setupRecyclerView()
+
+        fetchData(page)
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+
+                //Log.d("MainActivity", "onScrollChange: ")
+                val visibleItemCount = layoutManager.childCount
+                val pastVisibleItem = layoutManager.findFirstVisibleItemPosition()
+                val total = adapter.itemCount
+                if (page <= totalPage) {
+                    if (visibleItemCount + pastVisibleItem >= total) {
+
+                        page++
+                        fetchData(page)
+                    }
+                }
+                super.onScrolled(recyclerView, dx, dy)
+            }
+        })
+
+
+
+
+        constraint = findViewById(R.id.constraint)
         constraint.visibility = View.GONE
         val plusBtn = findViewById<ImageView>(R.id.smallerCircle)
         plusBtn.setOnClickListener {
 
-            Toast.makeText(this@Home3,"In Progress",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@Home3, "In Progress", Toast.LENGTH_SHORT).show()
         }
 
-homeIcon = findViewById(R.id.homeIcon)
-
-
-
-
+        homeIcon = findViewById(R.id.homeIcon)
 
 
 //        val lay = findViewById<LinearLayout>(R.id.helloLayout)
@@ -93,18 +130,17 @@ homeIcon = findViewById(R.id.homeIcon)
 
         userProfile.setOnClickListener {
 
-            val intent = Intent(this@Home3,UserProfile::class.java)
+            val intent = Intent(this@Home3, UserProfile::class.java)
             startActivity(intent)
         }
 
 
         val sh = getSharedPreferences("language", MODE_PRIVATE)
-        val language_id = sh.getString("language_id", "")
+        language_id = sh.getString("language_id", "").toString()
         val sharedPreferences = getSharedPreferences("category", MODE_PRIVATE)
-        category_id = sharedPreferences.getString("category_id","").toString()
-         Log.d("language", language_id!!)
+        category_id = sharedPreferences.getString("category_id", "").toString()
+        Log.d("language", language_id!!)
 
-        val names = listOf("Option 1", "Option 2", "Option 3", "Option 4", "Option 5","Option 6","Option 7","Option 8","Option 9","Option 10","Option 1", "Option 2", "Option 3", "Option 4", "Option 5","Option 6","Option 7","Option 8","Option 9","Option 10")
         val colorList = listOf(
             R.color.black,
             R.color.blue_color,
@@ -115,20 +151,11 @@ homeIcon = findViewById(R.id.homeIcon)
             // Add more color resources as needed
         )
 
-        val images = intArrayOf(R.drawable.image13,R.drawable.image14,R.drawable.image15,R.drawable.image16,R.drawable.image17,R.drawable.image18,R.drawable.image19,R.drawable.image20,R.drawable.image13,R.drawable.image14,R.drawable.image15,R.drawable.image16,R.drawable.image17,R.drawable.image18,R.drawable.image19,R.drawable.image20)
 
-
-        for(i in images.indices){
-
-            modalList.add(Modal(images[i]))
-        }
-
-
-        //val lay = findViewById<LinearLayout>(R.id.helloLayout)
         val inflater: LayoutInflater = LayoutInflater.from(this)
 
-        val view1 = inflater.inflate(R.layout.one_layout,null)
-        val view2 = inflater.inflate(R.layout.two_layout,null)
+        val view1 = inflater.inflate(R.layout.one_layout, null)
+        val view2 = inflater.inflate(R.layout.two_layout, null)
 
 
         val chipGroup1 = findViewById<ChipGroup>(R.id.horizontalChipGroup1)
@@ -143,97 +170,20 @@ homeIcon = findViewById(R.id.homeIcon)
 
             category_id = ""
 
-            GlobalScope.launch(Dispatchers.IO) {
-
-
-                val client = OkHttpClient()
-                val mediaType = "text/plain".toMediaType()
-                val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-                    .addFormDataPart("language_id", language_id)
-                    .addFormDataPart("category_id", category_id)
-                    .build()
-
-                val request = Request.Builder()
-                    .url("https://statusstory.digiauxilio.com/index.php/api/get_post_image_all")
-                    .post(requestBody)
-                    .build()
-
-                try {
-                    val response = client.newCall(request).execute()
-
-                    val responseBody = response.body?.string()
-
-                    // Use the response as needed (e.g., update UI, handle success/failure)
-                    val registrationResponse = parseRegistrationResponseImage(responseBody)
-
-                    // Example: Log the message
-
-
-                    // Example: Log the response body
-                    Log.d("response", registrationResponse.toString())
-
-                    withContext(Dispatchers.Main) {
-
-
-
-
-                        if (registrationResponse.status == 1) {
-
-                            val recyclerView: RecyclerView = findViewById(R.id.khokho1)
-                            recyclerView.layoutManager = GridLayoutManager(this@Home3,2)
-
-                            // Create and set the adapter
-                            val imageAdapter = ImageAdapter(this@Home3,
-                                registrationResponse.data as MutableList<ImageRequest>
-                            )
-                            recyclerView.adapter = imageAdapter
-
-
-
-                        } else {
-
-
-                        }
-
-
-
-
-
-
-                    }
-
-
-//                                // Close the response to release resources
-                    response.close()
-
-
-                } catch (e: Exception) {
-                    // Handle network request failure
-                    e.printStackTrace()
-                }
-            }
-
 
         }
 
 
-
-
-
         val horizontalScrollView = findViewById<HorizontalScrollView>(R.id.horizontalScrollView)
-
 
 
         val random = Random()
 
 
 
-        // Create a variable to keep track of the current row of chips
 
 
-
-
-          // category call
+        // category call
         GlobalScope.launch(Dispatchers.IO) {
 
             val client = OkHttpClient()
@@ -251,21 +201,14 @@ homeIcon = findViewById(R.id.homeIcon)
 
 //                            // Use the response as needed (e.g., update UI, handle success/failure)
                 val registrationResponse = parseRegistrationResponse(responseBody)
-//
-//                            // Example: Log the message
-//
-//
-//                            // Example: Log the response body
+
                 Log.d("response", registrationResponse?.data?.toString().toString())
 
-                withContext(Dispatchers.Main){
-                    if(registrationResponse.status==1){
-
-
-
+                withContext(Dispatchers.Main) {
+                    if (registrationResponse.status == 1) {
 
 //                                // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
-                        Log.d("response",registrationResponse.data.toString())
+                        Log.d("response", registrationResponse.data.toString())
                         for ((index, name) in registrationResponse?.data!!.withIndex()) {
                             val chip = Chip(this@Home3)
                             chip.text = registrationResponse.data!![index].name
@@ -277,13 +220,14 @@ homeIcon = findViewById(R.id.homeIcon)
 
                             // Set a random background color
                             val randomColorRes = colorList[random.nextInt(colorList.size)]
-                            chip.setChipBackgroundColorResource(randomColorRes)
+                            chip.setChipBackgroundColorResource(R.color.text)
 
-                            val textColorWhite = resources.getColor(android.R.color.white, null)
-                            chip.setTextColor(textColorWhite)
+                            val textColorBlack = resources.getColor(android.R.color.black, null)
+                            chip.setTextColor(textColorBlack)
 
                             // Set rounded corners (border radius)
-                            chip.chipCornerRadius = resources.getDimension(R.dimen.chip_corner_radius)
+                            chip.chipCornerRadius =
+                                resources.getDimension(R.dimen.chip_corner_radius)
 
                             // Add an OnCheckedChangeListener to handle chip selection
                             chip.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -291,174 +235,49 @@ homeIcon = findViewById(R.id.homeIcon)
                                 if (isChecked) {
 
 
-                                    chip.setChipBackgroundColorResource(R.color.text)
-                                    val textColorWhite = resources.getColor(android.R.color.black, null)
+                                    chip.setChipBackgroundColorResource(randomColorRes)
+                                    val textColorWhite =
+                                        resources.getColor(android.R.color.white, null)
                                     chip.setTextColor(textColorWhite)
                                     //chip.setStyle(ChipDrawable.createFromAttributes(this@Home3, null, 0, R.style.Widget_MaterialComponents_Chip_Filter))
                                     // Chip is selected
                                     // You can perform actions based on the selected chip
                                     if (category_id.isEmpty()) {
                                         // If category_id is empty, set it to the selected category_id
-                                        category_id = registrationResponse.data!![index].category_id.toString()
+                                        category_id =
+                                            registrationResponse.data!![index].category_id.toString()
                                     } else {
                                         // If category_id is not empty, append the selected category_id
-                                        val id = registrationResponse.data!![index].category_id.toString()
+                                        val id =
+                                            registrationResponse.data!![index].category_id.toString()
                                         category_id += ",$id"
                                     }
+                                    adapter.clear()
                                     //category_id = registrationResponse.data!![index].category_id.toString()
-                                    GlobalScope.launch(Dispatchers.IO) {
-                                        val client = OkHttpClient()
-                                        val mediaType = "text/plain".toMediaType()
-                                        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-                                            .addFormDataPart("language_id", language_id)
-                                            .addFormDataPart("category_id", category_id)
-                                            .build()
-
-                                        val request = Request.Builder()
-                                            .url("https://statusstory.digiauxilio.com/index.php/api/get_post_image_all")
-                                            .post(requestBody)
-                                            .build()
-
-                                        try {
-                                            val response = client.newCall(request).execute()
-
-                                            val responseBody = response.body?.string()
-
-                                            // Use the response as needed (e.g., update UI, handle success/failure)
-                                            val registrationResponse = parseRegistrationResponseImage(responseBody)
-
-                                            // Example: Log the message
+                                    page = 1
+                                    fetchData(page)
 
 
-                                            // Example: Log the response body
-                                            Log.d("response", registrationResponse.toString())
-
-                                            withContext(Dispatchers.Main) {
+                                } else if (!isChecked) {
 
 
+                                    chip.setChipBackgroundColorResource(R.color.text)
 
+                                    chip.setTextColor(textColorBlack)
 
-                                                if (registrationResponse.status == 1) {
+                                    val id =
+                                        registrationResponse.data!![index].category_id.toString()
 
-                                                    val recyclerView: RecyclerView = findViewById(R.id.khokho1)
-                                                    recyclerView.layoutManager = GridLayoutManager(this@Home3,2)
-
-                                                    // Create and set the adapter
-                                                    val imageAdapter = ImageAdapter(this@Home3,
-                                                        registrationResponse.data as MutableList<ImageRequest>
-                                                    )
-                                                    recyclerView.adapter = imageAdapter
-
-
-
-                                                } else {
-
-
-                                                }
-
-
-
-
-
-
-                                            }
-
-
-//                                // Close the response to release resources
-                                            response.close()
-
-
-                                        } catch (e: Exception) {
-                                            // Handle network request failure
-                                            e.printStackTrace()
-                                        }
-                                    }
-
-
-
-                                } else if(!isChecked) {
-
-
-                                    val randomColorRes = colorList[random.nextInt(colorList.size)]
-                                    chip.setChipBackgroundColorResource(randomColorRes)
-                                    val textColorWhite = resources.getColor(android.R.color.white, null)
-                                    chip.setTextColor(textColorWhite)
-
-                                    val id = registrationResponse.data!![index].category_id.toString()
-
-                                    category_id = category_id.split(",").filter { it != id }.joinToString(",")
+                                    category_id =
+                                        category_id.split(",").filter { it != id }.joinToString(",")
 
                                     // If only one chip is present, clear the category_id
                                     if (chipGroup1.childCount == 1) {
                                         category_id = ""
                                     }
-                                    GlobalScope.launch(Dispatchers.IO) {
-                                        val client = OkHttpClient()
-                                        val mediaType = "text/plain".toMediaType()
-                                        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-                                            .addFormDataPart("language_id", language_id)
-                                            .addFormDataPart("category_id", category_id)
-                                            .build()
-
-                                        val request = Request.Builder()
-                                            .url("https://statusstory.digiauxilio.com/index.php/api/get_post_image_all")
-                                            .post(requestBody)
-                                            .build()
-
-                                        try {
-                                            val response = client.newCall(request).execute()
-
-                                            val responseBody = response.body?.string()
-
-                                            // Use the response as needed (e.g., update UI, handle success/failure)
-                                            val registrationResponse = parseRegistrationResponseImage(responseBody)
-
-                                            // Example: Log the message
-
-
-                                            // Example: Log the response body
-                                            Log.d("response", registrationResponse.toString())
-
-                                            withContext(Dispatchers.Main) {
-
-
-
-
-                                                if (registrationResponse.status == 1) {
-
-                                                    val recyclerView: RecyclerView = findViewById(R.id.khokho1)
-                                                    recyclerView.layoutManager = GridLayoutManager(this@Home3,2)
-
-                                                    // Create and set the adapter
-                                                    val imageAdapter = ImageAdapter(this@Home3,
-                                                        registrationResponse.data as MutableList<ImageRequest>
-                                                    )
-                                                    recyclerView.adapter = imageAdapter
-
-
-
-                                                } else {
-
-
-                                                }
-
-
-
-
-
-
-                                            }
-
-
-//                                // Close the response to release resources
-                                            response.close()
-
-
-                                        } catch (e: Exception) {
-                                            // Handle network request failure
-                                            e.printStackTrace()
-                                        }
-                                    }
+                                    adapter.clear()
+                                    page = 1
+                                    fetchData(page)
 
 
                                 }
@@ -470,16 +289,10 @@ homeIcon = findViewById(R.id.homeIcon)
                             // Check if we need to switch to the second ChipGroup
 
                         }
-
-
-                    }else{
-
-                        //showDialog(this@UpdatePassword,"Some error occured while updating","UPDATE FAILED")
-
+                    } else {
 
                     }
                 }
-
 
 
                 // Close the response to release resources
@@ -492,7 +305,29 @@ homeIcon = findViewById(R.id.homeIcon)
         }
 
 
-        // image call
+    }
+
+
+    private fun parseRegistrationResponse(responseBody: String?): CategoryApiResponse {
+        // Use Gson to parse the response body into a RegistrationResponse object
+        return Gson().fromJson(responseBody, CategoryApiResponse::class.java)
+    }
+
+    private fun parseRegistrationResponseImage(responseBody: String?): ImageApiResponse {
+        // Use Gson to parse the response body into a RegistrationResponse object
+        return Gson().fromJson(responseBody, ImageApiResponse::class.java)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        // Do nothing to restrict the back button
+        // You can add your custom logic here if needed
+    }
+
+
+    private fun fetchData(page: Int) {
+
+
         GlobalScope.launch(Dispatchers.IO) {
 
 
@@ -500,7 +335,8 @@ homeIcon = findViewById(R.id.homeIcon)
             val mediaType = "text/plain".toMediaType()
             val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart("language_id", language_id)
-               .addFormDataPart("category_id", category_id)
+                .addFormDataPart("category_id", category_id)
+                .addFormDataPart("page", "$page")
                 .build()
 
             val request = Request.Builder()
@@ -527,33 +363,20 @@ homeIcon = findViewById(R.id.homeIcon)
                     constraint.visibility = View.VISIBLE
 
 
-                        if (registrationResponse.status == 1) {
+                    if (registrationResponse.status == 1) {
 
-                            val recyclerView: RecyclerView = findViewById(R.id.khokho1)
-                            recyclerView.layoutManager = GridLayoutManager(this@Home3,2)
+                        totalPage = registrationResponse.total_page
+                        adapter.addList(registrationResponse?.data!! as ArrayList<ImageRequest>)
 
-                            // Create and set the adapter
-                            val imageAdapter = ImageAdapter(this@Home3,
-                                registrationResponse.data as MutableList<ImageRequest>
-                            )
-                            recyclerView.adapter = imageAdapter
+                    } else {
 
-
-
-                        } else {
-
-
-                        }
-
-
-
-
+                    }
 
 
                 }
 
-
-//                                // Close the response to release resources
+                //progressBar.visibility = View.GONE
+                // Close the response to release resources
                 response.close()
 
 
@@ -562,83 +385,14 @@ homeIcon = findViewById(R.id.homeIcon)
                 e.printStackTrace()
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 
-
-    private fun loadInterAd() {
-        var adRequest = AdRequest.Builder().build()
-
-        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-
-                mInterstitialAd = null
-            }
-
-            override fun onAdLoaded(interstitialAd: InterstitialAd) {
-
-                mInterstitialAd = interstitialAd
-                if (mInterstitialAd != null) {
-                    mInterstitialAd?.fullScreenContentCallback  = object : FullScreenContentCallback(){
-                        override fun onAdClicked() {
-                            super.onAdClicked()
-                        }
-
-                        override fun onAdDismissedFullScreenContent() {
-                            super.onAdDismissedFullScreenContent()
-                        }
-
-                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                            super.onAdFailedToShowFullScreenContent(p0)
-                        }
-
-                        override fun onAdImpression() {
-                            super.onAdImpression()
-                        }
-
-                        override fun onAdShowedFullScreenContent() {
-                            super.onAdShowedFullScreenContent()
-                        }
-
-                    }
-
-                    mInterstitialAd?.show(this@Home3)
-                } else {
-
-                }
-            }
-        })
-
-    }
-
-    private fun parseRegistrationResponse(responseBody: String?): CategoryApiResponse {
-        // Use Gson to parse the response body into a RegistrationResponse object
-        return Gson().fromJson(responseBody, CategoryApiResponse::class.java)
-    }
-
-    private fun parseRegistrationResponseImage(responseBody: String?): ImageApiResponse {
-        // Use Gson to parse the response body into a RegistrationResponse object
-        return Gson().fromJson(responseBody, ImageApiResponse::class.java)
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        // Do nothing to restrict the back button
-        // You can add your custom logic here if needed
+    private fun setupRecyclerView() {
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = layoutManager
+        adapter = ImageAdapter(this@Home3)
+        recyclerView.adapter = adapter
     }
 
 

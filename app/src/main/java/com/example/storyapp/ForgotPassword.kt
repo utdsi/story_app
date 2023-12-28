@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.digiauxilio.storyapp.R
 import com.github.ybq.android.spinkit.SpinKitView
 import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
@@ -31,6 +32,7 @@ class ForgotPassword : AppCompatActivity() {
     private lateinit var email: EditText
     private lateinit var backBtn: Button
     private lateinit var loadingDialog: LoadingDialog
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +46,7 @@ class ForgotPassword : AppCompatActivity() {
 
         backBtn.setOnClickListener {
 
-            val intent = Intent(this@ForgotPassword,Login::class.java)
+            val intent = Intent(this@ForgotPassword, Login::class.java)
 
             startActivity(intent)
         }
@@ -53,9 +55,9 @@ class ForgotPassword : AppCompatActivity() {
 
             val emailValue = email.text.toString()
 
-            if(checkForInternet(this)){
+            if (checkForInternet(this)) {
 
-                if(!emailValue.isEmpty()){
+                if (!emailValue.isEmpty()) {
                     showLoadingDialog()
                     GlobalScope.launch(Dispatchers.IO) {
                         val client = OkHttpClient()
@@ -83,18 +85,25 @@ class ForgotPassword : AppCompatActivity() {
 //                            // Example: Log the response body
                             Log.d("response", registrationResponse.toString())
 
-dismissLoadingDialog()
-                            if(registrationResponse.status==1){
+                            dismissLoadingDialog()
+                            if (registrationResponse.status == 1) {
 
-                                showDialogSuccessUpdate(this@ForgotPassword,"Password successfully sent to your email","UPDATE SUCCESS")
+                                showDialogSuccessUpdate(
+                                    this@ForgotPassword,
+                                    "Password successfully sent to your email",
+                                    "UPDATE SUCCESS"
+                                )
 
 //                                // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
 
 
+                            } else if (registrationResponse.status == 2) {
 
-                            }else if(registrationResponse.status==2){
-
-                                showDialogSuccessUpdate(this@ForgotPassword,"Email doesn't exist","UPDATE FAILED")
+                                showDialogSuccessUpdate(
+                                    this@ForgotPassword,
+                                    "Email doesn't exist",
+                                    "UPDATE FAILED"
+                                )
                             }
 
 
@@ -108,25 +117,28 @@ dismissLoadingDialog()
                     }
 
 
-                }else{
+                } else {
                     dismissLoadingDialog()
-                    Toast.makeText(this@ForgotPassword,"Please fill all the details",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@ForgotPassword,
+                        "Please fill all the details",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
 
-
-            }else{
+            } else {
                 dismissLoadingDialog()
-                Toast.makeText(this@ForgotPassword,"Internet Connection Unavailable",Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@ForgotPassword,
+                    "Internet Connection Unavailable",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
 
-
-
     }
-
-
 
 
     private fun checkForInternet(context: Context): Boolean {
@@ -168,15 +180,18 @@ dismissLoadingDialog()
             return networkInfo.isConnected
         }
     }
+
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         // Do nothing to restrict the back button
         // You can add your custom logic here if needed
     }
+
     private fun parseRegistrationResponse(responseBody: String?): ApiResponse {
         // Use Gson to parse the response body into a RegistrationResponse object
         return Gson().fromJson(responseBody, ApiResponse::class.java)
     }
+
     private fun showDialogSuccessUpdate(context: Context, message: String, alert: String) {
         (context as? Activity)?.runOnUiThread {
             val builder = AlertDialog.Builder(context)
@@ -187,7 +202,7 @@ dismissLoadingDialog()
                 .setPositiveButton("OK") { dialog, _ ->
                     // Dismiss the dialog when the "OK" button is clicked
                     dialog.dismiss()
-                    val intent  = Intent(this@ForgotPassword,Login::class.java)
+                    val intent = Intent(this@ForgotPassword, Login::class.java)
                     startActivity(intent)
                 }
 
@@ -201,12 +216,12 @@ dismissLoadingDialog()
     private fun dismissLoadingDialog() {
         loadingDialog.dismiss()
     }
+
     private fun showLoadingDialog() {
         loadingDialog.show()
         val spinKitView = loadingDialog.findViewById<SpinKitView>(R.id.spin_kit)
         spinKitView.setIndeterminateDrawable(Wave())
     }
-
 
 
 }

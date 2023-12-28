@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.annotation.SuppressLint
 import android.content.ContentValues

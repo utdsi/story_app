@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -38,6 +38,7 @@ class Login : AppCompatActivity() {
     private lateinit var loadingDialog: LoadingDialog
     private lateinit var check: ImageView
     private lateinit var unCheck: ImageView
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +51,7 @@ class Login : AppCompatActivity() {
 
         loginBtn = findViewById(R.id.loginBtn)
         email = findViewById(R.id.logEmail)
-        password  = findViewById(R.id.logPassword)
+        password = findViewById(R.id.logPassword)
         check = findViewById(R.id.checkBox)
         unCheck = findViewById(R.id.unCheckBox)
 
@@ -69,23 +70,22 @@ class Login : AppCompatActivity() {
         }
 
 
-
         val backBtn = findViewById<Button>(R.id.backBtn2)
         backBtn.setOnClickListener {
 
-            val intent = Intent(this@Login,home2::class.java)
+            val intent = Intent(this@Login, home2::class.java)
             startActivity(intent)
         }
 
 
         signupBtn.setOnClickListener {
-            val intent  = Intent(this,Signup::class.java)
+            val intent = Intent(this, Signup::class.java)
             startActivity(intent)
         }
 
         forgotBtn.setOnClickListener {
 
-            val intent = Intent(this,ForgotPassword::class.java)
+            val intent = Intent(this, ForgotPassword::class.java)
             startActivity(intent)
         }
 
@@ -99,15 +99,15 @@ class Login : AppCompatActivity() {
         val showPassword = sharedPreferences.getString("showPassword", "")
 
 
-        if(showEmail!="" && showPassword!=""){
+        if (showEmail != "" && showPassword != "") {
             email.setText(showEmail)
             password.setText(showPassword)
         }
-        Log.d("hell","$showEmail,$showPassword")
+        Log.d("hell", "$showEmail,$showPassword")
 
 
 
-        loginBtn.setOnClickListener{
+        loginBtn.setOnClickListener {
 
             showLoadingDialog()
 
@@ -116,19 +116,19 @@ class Login : AppCompatActivity() {
             val passwordValue = password.text.toString()
 
 
-                //spinView.visibility = View.VISIBLE
+            //spinView.visibility = View.VISIBLE
 
 
-            if(checkForInternet(this)){
+            if (checkForInternet(this)) {
 
-                if(emailValue.isEmpty() || passwordValue.isEmpty()){
+                if (emailValue.isEmpty() || passwordValue.isEmpty()) {
                     dismissLoadingDialog()
                     Toast.makeText(this, "Please enter all the details", Toast.LENGTH_SHORT).show()
-                }else{
+                } else {
                     val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
                     val emailRegex = Regex(emailPattern)
 
-                    if(emailRegex.matches(emailValue)){
+                    if (emailRegex.matches(emailValue)) {
 
                         GlobalScope.launch(Dispatchers.IO) {
 
@@ -161,32 +161,56 @@ class Login : AppCompatActivity() {
 
                                 dismissLoadingDialog()
                                 //spinView.visibility = View.GONE
-                                if(registrationResponse.status==1){
+                                if (registrationResponse.status == 1) {
 
 
-                                   // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
+                                    // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
 
-                                    (showDialogSuccess(this@Login,"User Successfully Logged In","LOGIN SUCCESS"))
+                                    (showDialogSuccess(
+                                        this@Login,
+                                        "User Successfully Logged In",
+                                        "LOGIN SUCCESS"
+                                    ))
 
-                                    val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+                                    val sharedPreferences =
+                                        getSharedPreferences("MySharedPref", MODE_PRIVATE)
                                     val myEdit = sharedPreferences.edit()
 
                                     // write all the data entered by the user in SharedPreference and apply
-                                    myEdit.putString("name", registrationResponse?.data!![0]?.name.toString())
-                                    myEdit.putInt("user_id", registrationResponse?.data[0]?.user_id.toString().toInt())
-                                    myEdit.putString("dob", registrationResponse?.data!![0]?.dob.toString())
-                                    myEdit.putInt("gender", registrationResponse?.data!![0]?.gender.toString().toInt())
-                                    myEdit.putString("image",registrationResponse?.data!![0]?.profile_pic.toString())
-                                    myEdit.putString("email",registrationResponse?.data!![0]?.email.toString())
+                                    myEdit.putString(
+                                        "name",
+                                        registrationResponse?.data!![0]?.name.toString()
+                                    )
+                                    myEdit.putInt(
+                                        "user_id",
+                                        registrationResponse?.data[0]?.user_id.toString().toInt()
+                                    )
+                                    myEdit.putString(
+                                        "dob",
+                                        registrationResponse?.data!![0]?.dob.toString()
+                                    )
+                                    myEdit.putInt(
+                                        "gender",
+                                        registrationResponse?.data!![0]?.gender.toString().toInt()
+                                    )
+                                    myEdit.putString(
+                                        "image",
+                                        registrationResponse?.data!![0]?.profile_pic.toString()
+                                    )
+                                    myEdit.putString(
+                                        "email",
+                                        registrationResponse?.data!![0]?.email.toString()
+                                    )
                                     myEdit.apply()
 
 
+                                } else if (registrationResponse.status == 2) {
 
-
-
-                                }else if(registrationResponse.status==2){
-
-                                    showDialog(this@Login,"Incorrect email or password","LOGIN FAILED")
+                                    showDialog(
+                                        this@Login,
+                                        "Incorrect email or password",
+                                        "LOGIN FAILED"
+                                    )
                                 }
 
 
@@ -200,22 +224,24 @@ class Login : AppCompatActivity() {
                             }
                         }
 
-                    }else{
+                    } else {
                         dismissLoadingDialog()
-                        Toast.makeText(this, "Please enter the correct format of email", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "Please enter the correct format of email",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
-            }else{
+            } else {
                 dismissLoadingDialog()
                 Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
             }
         }
 
 
-
-
-
     }
+
     //checking internet
     private fun checkForInternet(context: Context): Boolean {
 
@@ -257,13 +283,13 @@ class Login : AppCompatActivity() {
         }
     }
 
-//    //parsing the response
+    //    //parsing the response
     private fun parseRegistrationResponse(responseBody: String?): ApiResponse {
         // Use Gson to parse the response body into a RegistrationResponse object
         return Gson().fromJson(responseBody, ApiResponse::class.java)
     }
 
-//    // shows dialog box
+    //    // shows dialog box
     private fun showDialog(context: Context, message: String, alert: String) {
         (context as? Activity)?.runOnUiThread {
             val builder = AlertDialog.Builder(context)
@@ -281,6 +307,7 @@ class Login : AppCompatActivity() {
             dialog.show()
         }
     }
+
     private fun showDialogSuccess(context: Context, message: String, alert: String) {
         (context as? Activity)?.runOnUiThread {
             val builder = AlertDialog.Builder(context)
@@ -291,7 +318,7 @@ class Login : AppCompatActivity() {
                 .setPositiveButton("OK") { dialog, _ ->
                     // Dismiss the dialog when the "OK" button is clicked
                     dialog.dismiss()
-                    val intent  = Intent(this@Login,Home3::class.java)
+                    val intent = Intent(this@Login, Home3::class.java)
                     startActivity(intent)
                 }
 
@@ -300,14 +327,17 @@ class Login : AppCompatActivity() {
             dialog.show()
         }
     }
+
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         // Do nothing to restrict the back button
         // You can add your custom logic here if needed
     }
+
     private fun dismissLoadingDialog() {
         loadingDialog.dismiss()
     }
+
     private fun showLoadingDialog() {
         loadingDialog.show()
         val spinKitView = loadingDialog.findViewById<SpinKitView>(R.id.spin_kit)

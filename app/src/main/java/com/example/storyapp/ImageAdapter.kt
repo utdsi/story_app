@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.content.Context
 import android.content.Intent
@@ -11,37 +11,46 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 
 
+class ImageAdapter(private val context: Context) :
+    RecyclerView.Adapter<ImageAdapter.UsersViewHolder>() {
 
-class ImageAdapter(val context: Context,private val imageUrlList: List<ImageRequest>) : RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
+    private var list = ArrayList<ImageRequest>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.image, parent, false)
-        return ImageViewHolder(view)
-    }
+    inner class UsersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(data: ImageRequest) {
+            with(itemView) {
+                val imageView = findViewById<ImageView>(R.id.khokho)
+                Picasso.get().load(data.image).into(imageView)
 
-    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        val imageUrl = imageUrlList[position].image
-        // Use Picasso to load images from URLs into ImageView
-        Picasso.get().load(imageUrl).into(holder.imageView)
+                imageView.setOnClickListener {
+                    //Toast.makeText(context,"${data.image}",Toast.LENGTH_SHORT).show()
 
-        holder.imageView.setOnClickListener {
-
-            val intent = Intent(context,ShareImageActivity::class.java)
-            intent.putExtra("image_url",imageUrl)
-            context.startActivity(intent)
+                    val intent = Intent(context, ShareImageActivity::class.java)
+                    intent.putExtra("image_url", data.image)
+                    context.startActivity(intent)
+                }
+            }
         }
     }
 
-    override fun getItemCount(): Int {
-        return imageUrlList.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.image, parent, false)
+        return UsersViewHolder(view)
     }
 
-    class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.khokho)
+    override fun getItemCount(): Int = list.size
+
+    override fun onBindViewHolder(holder: UsersViewHolder, position: Int) {
+        holder.bind(list[position])
+    }
+
+    fun addList(items: ArrayList<ImageRequest>) {
+        list.addAll(items)
+        notifyDataSetChanged()
+    }
+
+    fun clear() {
+        list.clear()
+        notifyDataSetChanged()
     }
 }
-
-
-
-
-

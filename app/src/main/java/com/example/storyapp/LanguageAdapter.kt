@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,7 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
-class LanguageAdapter(val context: Context,private val languageArray: MutableList<LanguageRequest>) : RecyclerView.Adapter<LanguageAdapter.LanguageViewHolder>() {
+class LanguageAdapter(
+    val context: Context,
+    private val languageArray: MutableList<LanguageRequest>
+) : RecyclerView.Adapter<LanguageAdapter.LanguageViewHolder>() {
 
     private var selectedItemPosition: Int = RecyclerView.NO_POSITION
 
@@ -20,14 +23,24 @@ class LanguageAdapter(val context: Context,private val languageArray: MutableLis
     }
 
     override fun onBindViewHolder(holder: LanguageViewHolder, position: Int) {
-         holder.languageTextView.text = languageArray[position].name
+        holder.languageTextView.text = languageArray[position].name
 
         if (position == selectedItemPosition) {
-            holder.languageTextView.setTextColor(ContextCompat.getColor(context, android.R.color.white))
+            holder.languageTextView.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    android.R.color.white
+                )
+            )
             holder.languageTextView.setBackgroundResource(R.drawable.language_circle)
         } else {
             // Reset the text color for non-selected items
-            holder.languageTextView.setTextColor(ContextCompat.getColor(context, android.R.color.black))
+            holder.languageTextView.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    android.R.color.black
+                )
+            )
             holder.languageTextView.setBackgroundResource(0)
         }
 
@@ -35,9 +48,10 @@ class LanguageAdapter(val context: Context,private val languageArray: MutableLis
 
             selectedItemPosition = holder.adapterPosition
 
-           notifyDataSetChanged()
-            Toast.makeText(context,languageArray[position].name,Toast.LENGTH_SHORT).show()
-            val sharedPreferences = context.getSharedPreferences("language", AppCompatActivity.MODE_PRIVATE)
+            notifyDataSetChanged()
+            Toast.makeText(context, languageArray[position].name, Toast.LENGTH_SHORT).show()
+            val sharedPreferences =
+                context.getSharedPreferences("language", AppCompatActivity.MODE_PRIVATE)
             val myEdit = sharedPreferences.edit()
 
             // write all the data entered by the user in SharedPreference and apply
@@ -51,7 +65,7 @@ class LanguageAdapter(val context: Context,private val languageArray: MutableLis
         return languageArray.size
     }
 
-    class LanguageViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
+    class LanguageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val languageTextView: TextView = itemView.findViewById(R.id.textViewValue)
 
     }

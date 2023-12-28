@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -43,6 +43,7 @@ class Signup : AppCompatActivity() {
     private lateinit var unCheck: ImageView
     private lateinit var emailValue: String
     private lateinit var passwordValue: String
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,16 +75,15 @@ class Signup : AppCompatActivity() {
         val backBtn = findViewById<Button>(R.id.backBtn3)
         backBtn.setOnClickListener {
 
-            val intent = Intent(this@Signup,Login::class.java)
+            val intent = Intent(this@Signup, Login::class.java)
             startActivity(intent)
         }
 
         loginRedirect.setOnClickListener {
 
-            val intent = Intent(this@Signup,Login::class.java)
+            val intent = Intent(this@Signup, Login::class.java)
             startActivity(intent)
         }
-
 
 
         val registerBtn = findViewById<Button>(R.id.registerBtn)
@@ -98,84 +98,101 @@ class Signup : AppCompatActivity() {
 
             if (checkForInternet(this)) {
 
-                if(emailValue.isEmpty() || nameValue.isEmpty() || passwordValue.isEmpty()){
+                if (emailValue.isEmpty() || nameValue.isEmpty() || passwordValue.isEmpty()) {
                     dismissLoadingDialog()
                     Toast.makeText(this, "Please enter all the details", Toast.LENGTH_SHORT).show()
-                }else{
+                } else {
                     val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
                     val emailRegex = Regex(emailPattern)
 
-                    if(emailRegex.matches(emailValue)){
+                    if (emailRegex.matches(emailValue)) {
 
                         val passwordRegex = Pattern.compile("^.{6,}$")
 
-                        if (passwordRegex.matcher(passwordValue).matches()){
-                        // Use Kotlin Coroutine to perform the network operation asynchronously
-                        GlobalScope.launch(Dispatchers.IO) {
-                            val client = OkHttpClient()
-                            val mediaType = "text/plain".toMediaType()
-                            val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-                                .addFormDataPart("name", nameValue)
-                                .addFormDataPart("email", emailValue)
-                                .addFormDataPart("password", passwordValue)
-                                .addFormDataPart("dob", "01-02-1990")
-                                .addFormDataPart("gender", "2")
-                                .build()
+                        if (passwordRegex.matcher(passwordValue).matches()) {
+                            // Use Kotlin Coroutine to perform the network operation asynchronously
+                            GlobalScope.launch(Dispatchers.IO) {
+                                val client = OkHttpClient()
+                                val mediaType = "text/plain".toMediaType()
+                                val requestBody =
+                                    MultipartBody.Builder().setType(MultipartBody.FORM)
+                                        .addFormDataPart("name", nameValue)
+                                        .addFormDataPart("email", emailValue)
+                                        .addFormDataPart("password", passwordValue)
+                                        .addFormDataPart("dob", "01-02-1990")
+                                        .addFormDataPart("gender", "2")
+                                        .build()
 
-                            val request = Request.Builder()
-                                .url("https://statusstory.digiauxilio.com/index.php/api/registration")
-                                .post(requestBody)
-                                .build()
+                                val request = Request.Builder()
+                                    .url("https://statusstory.digiauxilio.com/index.php/api/registration")
+                                    .post(requestBody)
+                                    .build()
 
-                            try {
-                                val response = client.newCall(request).execute()
+                                try {
+                                    val response = client.newCall(request).execute()
 
-                                val responseBody = response.body?.string()
+                                    val responseBody = response.body?.string()
 
-                                // Use the response as needed (e.g., update UI, handle success/failure)
-                                val registrationResponse = parseRegistrationResponse(responseBody)
+                                    // Use the response as needed (e.g., update UI, handle success/failure)
+                                    val registrationResponse =
+                                        parseRegistrationResponse(responseBody)
 
-                                // Example: Log the message
+                                    // Example: Log the message
 
 
-                                // Example: Log the response body
-                               Log.d("response", registrationResponse.toString())
-                                dismissLoadingDialog()
+                                    // Example: Log the response body
+                                    Log.d("response", registrationResponse.toString())
+                                    dismissLoadingDialog()
 
 //
-                                if(registrationResponse.status==1){
+                                    if (registrationResponse.status == 1) {
 
-                                  showDialogSuccess(this@Signup,"User Successfully registered","REGISTRATION SUCCESS")
+                                        showDialogSuccess(
+                                            this@Signup,
+                                            "User Successfully registered",
+                                            "REGISTRATION SUCCESS"
+                                        )
 
 
-                                }else if(registrationResponse.status==2){
+                                    } else if (registrationResponse.status == 2) {
 
-                                    showDialog(this@Signup,"User already Exist, Please login","REGISTRATION FAILED")
+                                        showDialog(
+                                            this@Signup,
+                                            "User already Exist, Please login",
+                                            "REGISTRATION FAILED"
+                                        )
+                                    }
+
+
+                                    // Close the response to release resources
+                                    response.close()
+
+                                } catch (e: Exception) {
+                                    // Handle network request failure
+                                    e.printStackTrace()
                                 }
-
-
-                                // Close the response to release resources
-                                response.close()
-
-                            } catch (e: Exception) {
-                                // Handle network request failure
-                                e.printStackTrace()
                             }
-                        }
-                    }else {
+                        } else {
 
                             dismissLoadingDialog()
 
-                            Toast.makeText(this, "Password should be minimum of 6 characters ", Toast.LENGTH_SHORT).show()
-                    }
+                            Toast.makeText(
+                                this,
+                                "Password should be minimum of 6 characters ",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
 
-                    }else{
+                    } else {
                         dismissLoadingDialog()
-                        Toast.makeText(this, "Please enter the correct format of email ", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "Please enter the correct format of email ",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
-
 
 
             } else {
@@ -186,7 +203,6 @@ class Signup : AppCompatActivity() {
 
 
     }
-
 
 
     //checking internet
@@ -255,6 +271,7 @@ class Signup : AppCompatActivity() {
             dialog.show()
         }
     }
+
     private fun showDialogSuccess(context: Context, message: String, alert: String) {
         (context as? Activity)?.runOnUiThread {
             val builder = AlertDialog.Builder(context)
@@ -267,8 +284,9 @@ class Signup : AppCompatActivity() {
                     dialog.dismiss()
 
 
-                    if(check.visibility == View.VISIBLE){
-                        val sharedPreferences = getSharedPreferences("showDetails", Context.MODE_PRIVATE)
+                    if (check.visibility == View.VISIBLE) {
+                        val sharedPreferences =
+                            getSharedPreferences("showDetails", Context.MODE_PRIVATE)
 
                         val editor = sharedPreferences.edit()
 
@@ -280,7 +298,7 @@ class Signup : AppCompatActivity() {
 
                         editor.apply()
                     }
-                    val intent  = Intent(this@Signup,Login::class.java)
+                    val intent = Intent(this@Signup, Login::class.java)
 
                     startActivity(intent)
                 }
@@ -290,13 +308,16 @@ class Signup : AppCompatActivity() {
             dialog.show()
         }
     }
+
     override fun onBackPressed() {
         // Do nothing to restrict the back button
         // You can add your custom logic here if needed
     }
+
     private fun dismissLoadingDialog() {
         loadingDialog.dismiss()
     }
+
     private fun showLoadingDialog() {
         loadingDialog.show()
         val spinKitView = loadingDialog.findViewById<SpinKitView>(R.id.spin_kit)

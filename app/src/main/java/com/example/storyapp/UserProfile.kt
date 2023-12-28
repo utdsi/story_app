@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 
 import android.annotation.SuppressLint
@@ -90,8 +90,8 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
 
         userName = findViewById(R.id.userNameDisplay)
-        dateDisplay  = findViewById(R.id.bdayText)
-        dateBtn  = findViewById(R.id.setBdayText)
+        dateDisplay = findViewById(R.id.bdayText)
+        dateBtn = findViewById(R.id.setBdayText)
         genderDisplay = findViewById(R.id.genderText)
         genderSet = findViewById(R.id.setGenderText)
         deleteUser = findViewById(R.id.deleteProfile)
@@ -108,29 +108,29 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
         backBtn.setOnClickListener {
 
-            val intent = Intent(this@UserProfile,Home3::class.java)
+            val intent = Intent(this@UserProfile, Home3::class.java)
             startActivity(intent)
         }
 
 
         val sh = getSharedPreferences("MySharedPref", MODE_PRIVATE)
         val name = sh.getString("name", "")
-         userId = sh.getInt("user_id", 0)
-         dob = sh.getString("dob", "").toString()
+        userId = sh.getInt("user_id", 0)
+        dob = sh.getString("dob", "").toString()
         var gender = sh.getInt("gender", 1)
-        var image = sh.getString("image","")
-         email = sh.getString("email","").toString()
+        var image = sh.getString("image", "")
+        email = sh.getString("email", "").toString()
 
         userName.setText(name)
         dateDisplay.setText(dob)
 
-        if(image != ""){
+        if (image != "") {
             Picasso.get().load(image).into(setImage)
         }
 
         changePassword.setOnClickListener {
 
-            val intent = Intent(this,UpdatePassword::class.java)
+            val intent = Intent(this, UpdatePassword::class.java)
             startActivity(intent)
         }
         deleteUser.setOnClickListener {
@@ -147,32 +147,31 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
         }
 
-        setImageBtn.setOnClickListener{
+        setImageBtn.setOnClickListener {
             showLoadingDialog()
 
             if (hasPermissions(android.Manifest.permission.CAMERA) || hasPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    showActionSheet()
-                } else {
-                    requestPermissions()
-                }
-
+                showActionSheet()
+            } else {
+                requestPermissions()
+            }
 
 
         }
 
 
 
-        if(gender==1){
+        if (gender == 1) {
             maleSet.isChecked = true
             femaleSet.isChecked = false
-            otherSet.isChecked= false
+            otherSet.isChecked = false
 
-        }else if(gender==2){
+        } else if (gender == 2) {
             femaleSet.isChecked = true
             maleSet.isChecked = false
             otherSet.isChecked = false
 
-        }else{
+        } else {
             femaleSet.isChecked = false
             maleSet.isChecked = false
             otherSet.isChecked = true
@@ -180,15 +179,17 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
         genderSet.setOnCheckedChangeListener { group, checkedId ->
 
-            when(checkedId){
+            when (checkedId) {
                 R.id.radioButton1 -> {
                     gender = 1
                     maleSet.isChecked = true
                 }
+
                 R.id.radioButton2 -> {
                     gender = 2
                     femaleSet.isChecked = true
                 }
+
                 R.id.radioButton3 -> {
                     gender = 3
                     otherSet.isChecked = true
@@ -197,14 +198,14 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
             }
         }
 
-        dateBtn.setOnClickListener{
+        dateBtn.setOnClickListener {
             showDatePickerDialog()
         }
 
         saveEditData.setOnClickListener {
 
-showLoadingDialog()
-            if(checkForInternet(this)){
+            showLoadingDialog()
+            if (checkForInternet(this)) {
 
                 GlobalScope.launch(Dispatchers.IO) {
 
@@ -236,32 +237,46 @@ showLoadingDialog()
                         // Example: Log the response body
                         Log.d("response", registrationResponse.toString())
 
-dismissLoadingDialog()
-                        if(registrationResponse.status==1){
-
+                        dismissLoadingDialog()
+                        if (registrationResponse.status == 1) {
 
 
                             // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
 
-                            (showDialogSuccess(this@UserProfile,"User details updated successfully","UPDATE SUCCESS"))
+                            (showDialogSuccess(
+                                this@UserProfile,
+                                "User details updated successfully",
+                                "UPDATE SUCCESS"
+                            ))
 
-                            val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+                            val sharedPreferences =
+                                getSharedPreferences("MySharedPref", MODE_PRIVATE)
                             val myEdit = sharedPreferences.edit()
 
                             // write all the data entered by the user in SharedPreference and apply
-                            myEdit.putString("name", registrationResponse?.data!![0]?.name.toString())
-                            myEdit.putInt("user_id", registrationResponse?.data[0]?.user_id.toString().toInt())
+                            myEdit.putString(
+                                "name",
+                                registrationResponse?.data!![0]?.name.toString()
+                            )
+                            myEdit.putInt(
+                                "user_id",
+                                registrationResponse?.data[0]?.user_id.toString().toInt()
+                            )
                             myEdit.putString("dob", registrationResponse?.data!![0]?.dob.toString())
-                            myEdit.putInt("gender", registrationResponse?.data!![0]?.gender.toString().toInt())
+                            myEdit.putInt(
+                                "gender",
+                                registrationResponse?.data!![0]?.gender.toString().toInt()
+                            )
                             myEdit.apply()
 
 
+                        } else if (registrationResponse.status == 2) {
 
-
-
-                        }else if(registrationResponse.status==2){
-
-                            showDialog(this@UserProfile,"Some error occured while updating","UPDATE FAILED")
+                            showDialog(
+                                this@UserProfile,
+                                "Some error occured while updating",
+                                "UPDATE FAILED"
+                            )
                         }
 
 
@@ -274,18 +289,15 @@ dismissLoadingDialog()
                         e.printStackTrace()
                     }
                 }
-            }else{
+            } else {
                 Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
             }
-
 
 
         }
 
 
-
     }
-
 
 
     private fun showDatePickerDialog() {
@@ -316,8 +328,6 @@ dismissLoadingDialog()
         // Show the date picker dialog
         datePickerDialog.show()
     }
-
-
 
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
@@ -358,6 +368,7 @@ dismissLoadingDialog()
         // Use Gson to parse the response body into a RegistrationResponse object
         return Gson().fromJson(responseBody, ApiResponse::class.java)
     }
+
     private fun showDialog(context: Context, message: String, alert: String) {
         (context as? Activity)?.runOnUiThread {
             val builder = AlertDialog.Builder(context)
@@ -406,7 +417,7 @@ dismissLoadingDialog()
                 .setPositiveButton("OK") { dialog, _ ->
                     // Dismiss the dialog when the "OK" button is clicked
                     dialog.dismiss()
-                    val intent  = Intent(this@UserProfile,Signup::class.java)
+                    val intent = Intent(this@UserProfile, Signup::class.java)
                     startActivity(intent)
                 }
 
@@ -415,7 +426,8 @@ dismissLoadingDialog()
             dialog.show()
         }
     }
-   //checking internet
+
+    //checking internet
     private fun checkForInternet(context: Context): Boolean {
 
         // register activity with the connectivity manager service
@@ -465,19 +477,30 @@ dismissLoadingDialog()
             when (which) {
                 0 -> {
                     // Handle Photo Library selection
-                    val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    val intent =
+                        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                     startActivityForResult(intent, REQUEST_IMAGE_PICK)
                 }
+
                 1 -> {
                     // Handle Camera selection
                     val cameraPermission = Manifest.permission.CAMERA
-                    if (ContextCompat.checkSelfPermission(this, cameraPermission) == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(
+                            this,
+                            cameraPermission
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
                         openCamera()
                     } else {
-                        ActivityCompat.requestPermissions(this, arrayOf(cameraPermission), REQUEST_IMAGE_CAPTURE)
+                        ActivityCompat.requestPermissions(
+                            this,
+                            arrayOf(cameraPermission),
+                            REQUEST_IMAGE_CAPTURE
+                        )
                     }
                 }
-                2 ->{
+
+                2 -> {
                     dismissLoadingDialog()
                 }
             }
@@ -497,7 +520,11 @@ dismissLoadingDialog()
     }
 
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             PERMISSIONS_REQUEST_CAMERA_STORAGE -> {
@@ -513,7 +540,10 @@ dismissLoadingDialog()
     }
 
     private fun hasPermissions(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermissions() {
@@ -521,21 +551,30 @@ dismissLoadingDialog()
         val cameraPermission = Manifest.permission.CAMERA
         val storagePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        if (ContextCompat.checkSelfPermission(this, cameraPermission) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                cameraPermission
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             permissionsToRequest.add(cameraPermission)
         }
 
-        if (ContextCompat.checkSelfPermission(this, storagePermission) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                storagePermission
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             permissionsToRequest.add(storagePermission)
         }
 
         if (permissionsToRequest.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), PERMISSIONS_REQUEST_CAMERA_STORAGE)
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsToRequest.toTypedArray(),
+                PERMISSIONS_REQUEST_CAMERA_STORAGE
+            )
         }
     }
-
-
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -551,6 +590,7 @@ dismissLoadingDialog()
 
                     imageUri = null // Reset the image URI
                 }
+
                 REQUEST_IMAGE_CAPTURE -> {
                     setImage.setImageURI(imageUri)
                     imageUri?.let { displayImage(it) }
@@ -561,11 +601,9 @@ dismissLoadingDialog()
     }
 
 
-
-    private fun displayImage(imageData: Any){
-        if(checkForInternet(this)){
+    private fun displayImage(imageData: Any) {
+        if (checkForInternet(this)) {
             GlobalScope.launch(Dispatchers.IO) {
-
 
 
                 val client = OkHttpClient()
@@ -578,6 +616,7 @@ dismissLoadingDialog()
                             it.readBytes().toRequestBody(mediaType)
                         } ?: throw IOException("Error reading image data from Uri")
                     }
+
                     else -> throw IllegalArgumentException("Unsupported image data type")
                 }
 
@@ -605,33 +644,47 @@ dismissLoadingDialog()
                     // Example: Log the response body
                     Log.d("response", registrationResponse.toString())
 
-dismissLoadingDialog()
-                    if(registrationResponse.status==1){
+                    dismissLoadingDialog()
+                    if (registrationResponse.status == 1) {
 
 
                         // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
 
-                        (showDialogSuccess(this@UserProfile,"User profile image updated successfully","UPDATE SUCCESS"))
+                        (showDialogSuccess(
+                            this@UserProfile,
+                            "User profile image updated successfully",
+                            "UPDATE SUCCESS"
+                        ))
 
                         val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
                         val myEdit = sharedPreferences.edit()
 
                         // write all the data entered by the user in SharedPreference and apply
                         myEdit.putString("name", registrationResponse?.data!![0]?.name.toString())
-                        myEdit.putInt("user_id", registrationResponse?.data[0]?.user_id.toString().toInt())
+                        myEdit.putInt(
+                            "user_id",
+                            registrationResponse?.data[0]?.user_id.toString().toInt()
+                        )
                         myEdit.putString("dob", registrationResponse?.data!![0]?.dob.toString())
-                        myEdit.putInt("gender", registrationResponse?.data!![0]?.gender.toString().toInt())
-                        myEdit.putString("image",registrationResponse?.data!![0]?.profile_pic.toString())
+                        myEdit.putInt(
+                            "gender",
+                            registrationResponse?.data!![0]?.gender.toString().toInt()
+                        )
+                        myEdit.putString(
+                            "image",
+                            registrationResponse?.data!![0]?.profile_pic.toString()
+                        )
                         myEdit.apply()
 
 
+                    } else if (registrationResponse.status == 2) {
 
 
-
-                    }else if(registrationResponse.status==2){
-
-
-                        showDialog(this@UserProfile,"Some error occured while upload","UPDATE FAILED")
+                        showDialog(
+                            this@UserProfile,
+                            "Some error occured while upload",
+                            "UPDATE FAILED"
+                        )
                     }
 
 
@@ -643,14 +696,17 @@ dismissLoadingDialog()
                     e.printStackTrace()
                 }
             }
-        }else{
+        } else {
             Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
         }
     }
+
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         // Do nothing to restrict the back button
         // You can add your custom logic here if needed
     }
+
     private fun showYesNoDialog() {
         val alertDialogBuilder = AlertDialog.Builder(this)
 
@@ -663,15 +719,21 @@ dismissLoadingDialog()
             // Do something when "Yes" is clicked
             dialog.dismiss() // Close the dialog
             // Add your logic here for the "Yes" option
-            if(checkForInternet(this)){
+            if (checkForInternet(this)) {
                 val sh = getSharedPreferences("MySharedPref", MODE_PRIVATE)
                 val editor = sh.edit()
                 editor.clear()
                 editor.apply()
+                val sharedPreferences = getSharedPreferences("showDetails", Context.MODE_PRIVATE)
+
+                val edit = sharedPreferences.edit()
+
+                edit.clear()
+                edit.apply()
                 Toast.makeText(this, "User logged out successfully", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this,Login::class.java)
+                val intent = Intent(this, Login::class.java)
                 startActivity(intent)
-            }else{
+            } else {
                 Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
             }
 
@@ -692,6 +754,7 @@ dismissLoadingDialog()
     private fun dismissLoadingDialog() {
         loadingDialog.dismiss()
     }
+
     private fun showLoadingDialog() {
         loadingDialog.show()
         val spinKitView = loadingDialog.findViewById<SpinKitView>(R.id.spin_kit)
@@ -726,11 +789,11 @@ dismissLoadingDialog()
         alertDialog.show()
     }
 
-    private fun deleteProfile(){
+    private fun deleteProfile() {
 
         showLoadingDialog()
 
-        if(checkForInternet(this)){
+        if (checkForInternet(this)) {
 
             GlobalScope.launch(Dispatchers.IO) {
 
@@ -760,12 +823,16 @@ dismissLoadingDialog()
                     Log.d("response", registrationResponse.toString())
 
                     dismissLoadingDialog()
-                    if(registrationResponse.status==1){
+                    if (registrationResponse.status == 1) {
 
 
                         // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
 
-                        (showDialogSuccessDelete(this@UserProfile,"User deleted successfully","DELETED SUCCESS"))
+                        (showDialogSuccessDelete(
+                            this@UserProfile,
+                            "User deleted successfully",
+                            "DELETED SUCCESS"
+                        ))
 
                         val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
                         val myEdit = sharedPreferences.edit()
@@ -775,13 +842,14 @@ dismissLoadingDialog()
                         myEdit.apply()
 
 
+                    } else if (registrationResponse.status == 2) {
 
 
-
-                    }else if(registrationResponse.status==2){
-
-
-                        showDialog(this@UserProfile,"Some error occured while deleting","DELETE FAILED")
+                        showDialog(
+                            this@UserProfile,
+                            "Some error occured while deleting",
+                            "DELETE FAILED"
+                        )
                     }
 
 
@@ -795,7 +863,7 @@ dismissLoadingDialog()
                 }
             }
 
-        }else{
+        } else {
             Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
         }
     }

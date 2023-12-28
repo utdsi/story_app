@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -17,13 +17,13 @@ class MainActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
 
-        )
+            )
 
         Handler(Looper.getMainLooper()).postDelayed({
 
-            val intent = Intent(this,home2::class.java)
+            val intent = Intent(this, home2::class.java)
             startActivity(intent)
             finish()
-        },1000)
+        }, 1000)
     }
 }

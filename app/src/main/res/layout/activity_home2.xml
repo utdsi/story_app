@@ -1,77 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".home2"
-    android:orientation="vertical"
     android:layout_marginLeft="30dp"
-    android:layout_marginRight="30dp"
     android:layout_marginTop="20dp"
-    android:layout_marginBottom="20dp">
+    android:layout_marginRight="30dp"
+    android:layout_marginBottom="20dp"
+    android:orientation="vertical"
+    tools:context=".home2">
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Choose the \nlanguage"
-        android:textSize="30dp"
-        />
+        android:textSize="30dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="600dp"
-        android:orientation="vertical"
         android:layout_gravity="center_horizontal"
-        >
+        android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
-            />
+            android:layout_marginBottom="10dp" />
     </LinearLayout>
 
 
-
-
-    <com.github.ybq.android.spinkit.SpinKitView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.github.ybq.android.spinkit.SpinKitView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/spin_kit"
         style="@style/SpinKitView.Large.Circle"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        app:SpinKit_Color="@color/eye"
+        android:layout_marginBottom="30dp"
         android:visibility="gone"
-        android:layout_marginBottom="30dp"/>
+        app:SpinKit_Color="@color/eye" />
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/nextBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/button"
+            android:fontFamily="sans-serif"
+            android:paddingStart="40dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="40dp"
+            android:paddingBottom="10dp"
             android:text="Next"
             android:textAllCaps="false"
-            android:textSize="20dp"
-            android:paddingStart="40dp"
-            android:paddingEnd="40dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:fontFamily="sans-serif"/>
+            android:textSize="20dp" />
     </LinearLayout>
-
-
-
 
 
 </LinearLayout>

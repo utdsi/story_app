@@ -1,4 +1,4 @@
-package com.example.storyapp
+package com.digiauxilio.storyapp
 
 import android.app.Dialog
 import android.content.Context
@@ -7,7 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Window
 
-class LoadingDialog(context: Context): Dialog(context) {
+class LoadingDialog(context: Context) : Dialog(context) {
 
 
     init {
