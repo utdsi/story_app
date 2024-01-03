@@ -54,13 +54,14 @@ data class ImageApiResponse(
 
 data class ImageRequest(
 
-    val post_image_id: Int,
+    val post_image_id: String,
     val title: String,
     val description: String,
-    val category_id: Int,
-    val language_id: Int,
-    val status: Int,
-    val image: String
+    val category_id: String,
+    val language_id: String,
+    val status: String,
+    val image: String,
+    val created_at: String?
 
 )
 

@@ -10,13 +10,31 @@
     android:layout_marginBottom="20dp"
     android:orientation="vertical"
     tools:context=".home2">
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Choose the \nlanguage"
-        android:textSize="30dp" />
+        android:textSize="30dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+         />
+    <ImageView
+        android:id="@+id/refeshBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_refresh_24"
+        android:layout_gravity="center_vertical" />
+
+
+
+
+</LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"

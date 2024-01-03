@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digiauxilio.storyapp.R
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -43,7 +45,84 @@ class home2 : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         //val list = mutableListOf<LanguageRequest>(LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"))
         //Log.d("list",list.toString())
-        var list: List<LanguageRequest> = mutableListOf()
+
+
+        val refreshBtn : ImageView = findViewById(R.id.refeshBtn)
+
+        refreshBtn.setOnClickListener {
+            spinKit.visibility = View.VISIBLE
+            GlobalScope.launch(Dispatchers.IO) {
+
+
+
+                val client = OkHttpClient()
+                val mediaType = "text/plain".toMediaType()
+                val request = Request.Builder()
+                    .url("https://statusstory.digiauxilio.com/index.php/api/languageList")
+                    .build()
+
+
+
+                try {
+                    val response = client.newCall(request).execute()
+
+                    val responseBody = response.body?.string()
+
+//                            // Use the response as needed (e.g., update UI, handle success/failure)
+                    val registrationResponse = parseRegistrationResponse(responseBody)
+//
+//                            // Example: Log the message
+//
+//
+//                            // Example: Log the response body
+                    Log.d("response", registrationResponse?.data?.toString().toString())
+
+                    withContext(Dispatchers.Main){
+                        if(registrationResponse.status==1){
+
+
+//
+                            recyclerView.adapter = LanguageAdapter(this@home2,registrationResponse?.data as MutableList<LanguageRequest>)
+                            //recyclerView.layoutManager = LinearLayoutManager(this@home2)
+
+                            val layoutManager = LinearLayoutManager(this@home2, LinearLayoutManager.VERTICAL, false)
+                            recyclerView.layoutManager = layoutManager
+//
+                            val snapHelper = LinearSnapHelper()
+                            snapHelper.attachToRecyclerView(recyclerView)
+//
+//                        // Set up your adapter
+                            val adapter = LanguageAdapter(this@home2,registrationResponse?.data as MutableList<LanguageRequest>)
+                            recyclerView.adapter = adapter
+//
+//
+
+
+                            spinKit.visibility = View.GONE
+
+                        }else if(registrationResponse.status==2){
+
+                            //showDialog(this@UpdatePassword,"Some error occured while updating","UPDATE FAILED")
+
+
+                        }
+                    }
+
+
+
+                    // Close the response to release resources
+                    response.close()
+
+
+
+
+                } catch (e: Exception) {
+                    // Handle network request failure
+                    e.printStackTrace()
+                }
+            }
+
+        }
 
 
 
@@ -93,7 +172,25 @@ class home2 : AppCompatActivity() {
 
         }
 
-        GlobalScope.launch(Dispatchers.IO) {
+        val userDataList = loadUserDataList()
+
+        if(userDataList.size > 0){
+            recyclerView.adapter = LanguageAdapter(this@home2,userDataList as MutableList<LanguageRequest>)
+            //recyclerView.layoutManager = LinearLayoutManager(this@home2)
+
+            val layoutManager = LinearLayoutManager(this@home2, LinearLayoutManager.VERTICAL, false)
+            recyclerView.layoutManager = layoutManager
+//
+            val snapHelper = LinearSnapHelper()
+            snapHelper.attachToRecyclerView(recyclerView)
+//
+//                        // Set up your adapter
+            val adapter = LanguageAdapter(this@home2,userDataList as MutableList<LanguageRequest>)
+            recyclerView.adapter = adapter
+
+        }else{
+
+                    GlobalScope.launch(Dispatchers.IO) {
 
             spinKit.visibility = View.VISIBLE
 
@@ -122,10 +219,32 @@ class home2 : AppCompatActivity() {
                 withContext(Dispatchers.Main){
                     if(registrationResponse.status==1){
 
+//                        for ((index,item) in registrationResponse?.data!!) {
+//                            val userData = mutableMapOf(
+//
+//                                "name" to name,
+//                                "email" to email,
+//                                "gender" to gender,
+//                                "username" to username,
+//                                "password" to password,
+//                                "dob" to dob,
+//                                "phone" to phone,
+//                                "role" to role,
+//                                 "post_image_id" to registrationResponse?.data[index].po,
+//                             "title": String,
+//                             "description": String,
+//                             "category_id": Int,
+//                             "language_id": Int,
+//                             "status": Int,
+//                             "image": String,
+//                             "created_at": String?
+//
+//                            )
+//
+//                        }
 
-//                                // Toast.makeText(this@Login, "LOGIN SUCCESS \n User Successfully Logged In", Toast.LENGTH_SHORT).show()
-                        list = registrationResponse?.data!! // Adjust this line based on your data structure
-                        recyclerView.adapter = LanguageAdapter(this@home2,list as MutableList<LanguageRequest>)
+
+                        recyclerView.adapter = LanguageAdapter(this@home2,registrationResponse?.data as MutableList<LanguageRequest>)
                         //recyclerView.layoutManager = LinearLayoutManager(this@home2)
 
                         val layoutManager = LinearLayoutManager(this@home2, LinearLayoutManager.VERTICAL, false)
@@ -135,7 +254,7 @@ class home2 : AppCompatActivity() {
                         snapHelper.attachToRecyclerView(recyclerView)
 //
 //                        // Set up your adapter
-                        val adapter = LanguageAdapter(this@home2,list as MutableList<LanguageRequest>)
+                        val adapter = LanguageAdapter(this@home2,registrationResponse?.data as MutableList<LanguageRequest>)
                         recyclerView.adapter = adapter
 //
 //
@@ -164,6 +283,11 @@ class home2 : AppCompatActivity() {
                 e.printStackTrace()
             }
         }
+        }
+
+
+
+
 
 
     }
@@ -216,6 +340,32 @@ class home2 : AppCompatActivity() {
         // Do nothing to restrict the back button
         // You can add your custom logic here if needed
     }
+    override fun onPause() {
+        val sharedPreferences = getSharedPreferences("language", AppCompatActivity.MODE_PRIVATE)
+        val myEdit = sharedPreferences.edit()
+        myEdit.remove("language")
+
+        super.onPause()
+    }
+
+    private fun saveUserDataList(userDataList: MutableList<MutableMap<String, String>>) {
+        val preferences = getSharedPreferences("LanguageList", MODE_PRIVATE)
+        val editor = preferences.edit()
+        val gson = Gson()
+        val dataJson = gson.toJson(userDataList)
+        editor.putString("user_data_list", dataJson)
+        editor.apply()
+    }
+    private fun loadUserDataList(): MutableList<MutableMap<String, String>> {
+        val preferences = getSharedPreferences("LanguageList", MODE_PRIVATE)
+        val gson = Gson()
+        val dataJson = preferences.getString("user_data_list", null)
+        val type = object : TypeToken<MutableList<MutableMap<String, String>>>() {}.type
+        return gson.fromJson(dataJson, type) ?: mutableListOf()
+    }
+
 
 
 }
+
+

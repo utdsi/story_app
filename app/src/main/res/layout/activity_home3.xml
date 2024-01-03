@@ -1,130 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="15dp"
-    android:paddingLeft="20dp"
-    tools:context=".Home3">
-
-
+    android:layout_width="match_parent">
     <LinearLayout
-        android:id="@+id/verticalLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="15dp"
+        android:paddingLeft="20dp"
+        tools:context=".Home3">
 
-        <HorizontalScrollView
-            android:id="@+id/horizontalScrollView"
+
+        <LinearLayout
+            android:id="@+id/verticalLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none">
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <HorizontalScrollView
+                android:id="@+id/horizontalScrollView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:scrollbars="none">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/horizontalChipGroup1"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:chipSpacing="8dp"
-                    app:singleLine="false"
-                    app:singleSelection="false">
-                    <!-- Add your horizontal chips here for the first row -->
-                </com.google.android.material.chip.ChipGroup>
+                    android:orientation="vertical">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/horizontalChipGroup1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:chipSpacing="8dp"
+                        app:singleLine="false"
+                        app:singleSelection="false">
+                        <!-- Add your horizontal chips here for the first row -->
+                    </com.google.android.material.chip.ChipGroup>
 
 
-            </LinearLayout>
-        </HorizontalScrollView>
-    </LinearLayout>
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="600dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/khokho1"
+
+        <LinearLayout
+            android:id="@+id/recycleLinear"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp" />
+            android:layout_height="600dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/khokho1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp" />
+
+
+        </LinearLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="-20dp">
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                android:src="@drawable/below"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+
+                tools:ignore="MissingConstraints" />
+
+            <ImageView
+                android:id="@+id/largerCircle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="60dp"
+                app:layout_constraintBottom_toBottomOf="@id/imageView1"
+                app:layout_constraintEnd_toEndOf="@id/imageView1"
+                app:layout_constraintStart_toStartOf="@id/imageView1"
+                app:layout_constraintTop_toTopOf="@id/imageView1"
+
+                app:srcCompat="@drawable/ellipse" />
+
+            <!-- Smaller circle -->
+            <ImageView
+                android:id="@+id/smallerCircle"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:layout_constraintBottom_toBottomOf="@id/largerCircle"
+                app:layout_constraintEnd_toEndOf="@id/largerCircle"
+                app:layout_constraintStart_toStartOf="@id/largerCircle"
+                app:layout_constraintTop_toTopOf="@id/largerCircle"
+                app:srcCompat="@drawable/plus" />
+
+
+            <ImageView
+                android:id="@+id/homeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="35dp"
+                app:layout_constraintBottom_toBottomOf="@id/imageView1"
+
+                app:layout_constraintStart_toStartOf="@id/imageView1"
+                app:layout_constraintTop_toTopOf="@id/imageView1"
+                app:srcCompat="@drawable/baseline_home" />
+
+            <ImageView
+                android:id="@+id/peopleIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="35dp"
+                app:layout_constraintBottom_toBottomOf="@id/imageView1"
+                app:layout_constraintEnd_toEndOf="@id/imageView1"
+                app:layout_constraintTop_toTopOf="@id/imageView1"
+                app:srcCompat="@drawable/baseline_person" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </LinearLayout>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginTop="-20dp">
-
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:src="@drawable/below"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-
-            tools:ignore="MissingConstraints" />
-
-        <ImageView
-            android:id="@+id/largerCircle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="60dp"
-            app:layout_constraintBottom_toBottomOf="@id/imageView1"
-            app:layout_constraintEnd_toEndOf="@id/imageView1"
-            app:layout_constraintStart_toStartOf="@id/imageView1"
-            app:layout_constraintTop_toTopOf="@id/imageView1"
-
-            app:srcCompat="@drawable/ellipse" />
-
-        <!-- Smaller circle -->
-        <ImageView
-            android:id="@+id/smallerCircle"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            app:layout_constraintBottom_toBottomOf="@id/largerCircle"
-            app:layout_constraintEnd_toEndOf="@id/largerCircle"
-            app:layout_constraintStart_toStartOf="@id/largerCircle"
-            app:layout_constraintTop_toTopOf="@id/largerCircle"
-            app:srcCompat="@drawable/plus" />
-
-
-        <ImageView
-            android:id="@+id/homeIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="35dp"
-            app:layout_constraintBottom_toBottomOf="@id/imageView1"
-
-            app:layout_constraintStart_toStartOf="@id/imageView1"
-            app:layout_constraintTop_toTopOf="@id/imageView1"
-            app:srcCompat="@drawable/baseline_home" />
-
-        <ImageView
-            android:id="@+id/peopleIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="35dp"
-            app:layout_constraintBottom_toBottomOf="@id/imageView1"
-            app:layout_constraintEnd_toEndOf="@id/imageView1"
-            app:layout_constraintTop_toTopOf="@id/imageView1"
-            app:srcCompat="@drawable/baseline_person" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-</LinearLayout>
+</RelativeLayout>

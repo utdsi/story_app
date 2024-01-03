@@ -20,6 +20,7 @@ import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -67,6 +68,8 @@ class Home3 : AppCompatActivity() {
     private var page = 1
     private var totalPage: Int = 0
     private lateinit var progressBar: ProgressBar
+    private var SHOW_ADMOB: Boolean = true
+    private lateinit var linearRecycle:LinearLayout
 
 
     @SuppressLint("MissingInflatedId", "WrongViewCast", "SuspiciousIndentation")
@@ -78,13 +81,20 @@ class Home3 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home3)
 
-        //loadInterAd()
+
+//        if(SHOW_ADMOB){
+//            loadInterAd()
+//            SHOW_ADMOB = false
+//        }
+
+
 
 
 
 
         // image call
         recyclerView = findViewById(R.id.khokho1)
+        linearRecycle = findViewById(R.id.recycleLinear)
 
 
         layoutManager = GridLayoutManager(this, 2)
@@ -366,7 +376,15 @@ class Home3 : AppCompatActivity() {
                     if (registrationResponse.status == 1) {
 
                         totalPage = registrationResponse.total_page
-                        adapter.addList(registrationResponse?.data!! as ArrayList<ImageRequest>)
+
+//                        if(registrationResponse?.data!!.isEmpty()){
+//
+//                            Toast.makeText(this@Home3,"NO RESULT FOUND!",Toast.LENGTH_SHORT).show()
+//
+//                        }else{
+                            adapter.addList(registrationResponse?.data!! as ArrayList<ImageRequest>)
+                       // }
+
 
                     } else {
 
@@ -394,6 +412,55 @@ class Home3 : AppCompatActivity() {
         adapter = ImageAdapter(this@Home3)
         recyclerView.adapter = adapter
     }
+
+
+    private fun loadInterAd() {
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(this,"ca-app-pub-6657092270609774/8440910410", adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+
+                mInterstitialAd = null
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+
+                mInterstitialAd = interstitialAd
+                if (mInterstitialAd != null) {
+                    mInterstitialAd?.fullScreenContentCallback  = object : FullScreenContentCallback(){
+                        override fun onAdClicked() {
+                            super.onAdClicked()
+                        }
+
+                        override fun onAdDismissedFullScreenContent() {
+                            super.onAdDismissedFullScreenContent()
+                        }
+
+                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                            super.onAdFailedToShowFullScreenContent(p0)
+                        }
+
+                        override fun onAdImpression() {
+                            super.onAdImpression()
+                        }
+
+                        override fun onAdShowedFullScreenContent() {
+                            super.onAdShowedFullScreenContent()
+                        }
+
+                    }
+
+                    mInterstitialAd?.show(this@Home3)
+                } else {
+
+                }
+            }
+        })
+
+    }
+
+
+
 
 
 }
