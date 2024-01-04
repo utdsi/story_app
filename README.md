@@ -1,5 +1,5 @@
 
-This is A stus story app where user can register login and select language on that basis the images will appear and the filter options will also be there to see specific relevant images.
+This is A status story app where user can register login and select language on that basis the images will appear and the filter options will also be there to see specific relevant images.
 
 
 ![Home](https://github.com/utdsi/story_app/assets/112674221/e8d27cad-99bd-4130-a126-14ca8cd2cab4)
