@@ -112,7 +112,7 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
             startActivity(intent)
         }
 
-        val userMyPost = findViewById<TextView>(R.id.userMyPost)
+        val userMyPost = findViewById<ImageView>(R.id.userMyPost)
 
         userMyPost.setOnClickListener {
 

@@ -25,8 +25,7 @@ import okhttp3.Request
 class UserPost : AppCompatActivity() {
 
     private var category_id: String = ""
-    private lateinit var constraint: ConstraintLayout
-    private lateinit var homeIcon: ImageView
+
     private var language_id: String = ""
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ImageAdapter
@@ -45,8 +44,7 @@ class UserPost : AppCompatActivity() {
         val sh1 = getSharedPreferences("language", MODE_PRIVATE)
         language_id = sh1.getString("language_id", "").toString()
 
-        constraint = findViewById(R.id.constraint1)
-        homeIcon = findViewById(R.id.homeIcon2)
+
         recyclerView = findViewById(R.id.khokho2)
 
 
@@ -73,33 +71,17 @@ class UserPost : AppCompatActivity() {
                 super.onScrolled(recyclerView, dx, dy)
             }
         })
-        constraint.visibility = View.GONE
+
 
         val backBtn = findViewById<Button>(R.id.backBtn11)
-        val homeBtn = findViewById<ImageView>(R.id.homeIcon2)
-        val plusBtn = findViewById<ImageView>(R.id.smallerCircle2)
-        val userBtn = findViewById<ImageView>(R.id.peopleIcon2)
+
 
         backBtn.setOnClickListener {
 
             val intent = Intent(this@UserPost,UserProfile::class.java)
             startActivity(intent)
         }
-        homeBtn.setOnClickListener {
 
-            val intent = Intent(this@UserPost,Home3::class.java)
-            startActivity(intent)
-        }
-        plusBtn.setOnClickListener {
-
-            val intent = Intent(this@UserPost,PostImage::class.java)
-            startActivity(intent)
-        }
-        userBtn.setOnClickListener {
-
-            val intent = Intent(this@UserPost,UserProfile::class.java)
-            startActivity(intent)
-        }
 
 
     }
@@ -157,7 +139,7 @@ class UserPost : AppCompatActivity() {
 
                 withContext(Dispatchers.Main) {
 
-                    constraint.visibility = View.VISIBLE
+
 
 
                     if (registrationResponse.status == 1) {
