@@ -112,6 +112,14 @@ class UserProfile : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
             startActivity(intent)
         }
 
+        val userMyPost = findViewById<TextView>(R.id.userMyPost)
+
+        userMyPost.setOnClickListener {
+
+            val intent = Intent(this@UserProfile,UserPost::class.java)
+            startActivity(intent)
+        }
+
 
         val sh = getSharedPreferences("MySharedPref", MODE_PRIVATE)
         val name = sh.getString("name", "")

@@ -1,5 +1,7 @@
 package com.digiauxilio.storyapp
 
+import android.os.Parcelable
+
 data class RegistrationRequest(
     val user_id: Int,
     val email: String,

@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -40,6 +41,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
 import com.google.android.material.chip.ChipGroup
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -49,9 +51,10 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.ArrayList
+
 import java.util.Random
 import java.util.zip.Inflater
+import kotlin.collections.ArrayList
 
 
 class Home3 : AppCompatActivity() {
@@ -71,6 +74,8 @@ class Home3 : AppCompatActivity() {
     private var SHOW_ADMOB: Boolean = true
     private lateinit var linearRecycle:LinearLayout
 
+    private lateinit var category_list:MutableList<CategoryRequest>
+
 
     @SuppressLint("MissingInflatedId", "WrongViewCast", "SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +86,7 @@ class Home3 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home3)
 
+        category_list = mutableListOf()
 
 //        if(SHOW_ADMOB){
 //            loadInterAd()
@@ -127,10 +133,7 @@ class Home3 : AppCompatActivity() {
         constraint = findViewById(R.id.constraint)
         constraint.visibility = View.GONE
         val plusBtn = findViewById<ImageView>(R.id.smallerCircle)
-        plusBtn.setOnClickListener {
 
-            Toast.makeText(this@Home3, "In Progress", Toast.LENGTH_SHORT).show()
-        }
 
         homeIcon = findViewById(R.id.homeIcon)
 
@@ -224,7 +227,7 @@ class Home3 : AppCompatActivity() {
                             chip.text = registrationResponse.data!![index].name
                             chip.isCheckable = true
                             chip.isChecked = false
-
+                             category_list.add(name)
                             // Set the text color to white
 
 
@@ -312,8 +315,19 @@ class Home3 : AppCompatActivity() {
                 // Handle network request failure
                 e.printStackTrace()
             }
+
+            Log.d("category_list", category_list.toString())
+
+            saveCategoryList(category_list)
         }
 
+
+        plusBtn.setOnClickListener {
+
+            val  intent = Intent(this@Home3,PostImage::class.java)
+
+            startActivity(intent)
+        }
 
     }
 
@@ -459,6 +473,15 @@ class Home3 : AppCompatActivity() {
 
     }
 
+
+
+
+    fun saveCategoryList(categoryList: List<CategoryRequest>) {
+         val prefs = getSharedPreferences("Category_List", Context.MODE_PRIVATE)
+         val gson = Gson()
+        val json = gson.toJson(categoryList)
+        prefs.edit().putString("CATEGORY_LIST", json).apply()
+    }
 
 
 

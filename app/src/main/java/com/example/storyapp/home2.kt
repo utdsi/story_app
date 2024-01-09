@@ -34,6 +34,7 @@ import okhttp3.Request
 class home2 : AppCompatActivity() {
 
     private lateinit var spinKit: SpinKitView
+    private lateinit var language_list:MutableList<LanguageRequest>
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +42,7 @@ class home2 : AppCompatActivity() {
 
         spinKit = findViewById(R.id.spin_kit)
         val nextBtn = findViewById<Button>(R.id.nextBtn)
-
+        language_list = mutableListOf()
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         //val list = mutableListOf<LanguageRequest>(LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"),LanguageRequest(1, "string"))
         //Log.d("list",list.toString())
@@ -219,29 +220,11 @@ class home2 : AppCompatActivity() {
                 withContext(Dispatchers.Main){
                     if(registrationResponse.status==1){
 
-//                        for ((index,item) in registrationResponse?.data!!) {
-//                            val userData = mutableMapOf(
-//
-//                                "name" to name,
-//                                "email" to email,
-//                                "gender" to gender,
-//                                "username" to username,
-//                                "password" to password,
-//                                "dob" to dob,
-//                                "phone" to phone,
-//                                "role" to role,
-//                                 "post_image_id" to registrationResponse?.data[index].po,
-//                             "title": String,
-//                             "description": String,
-//                             "category_id": Int,
-//                             "language_id": Int,
-//                             "status": Int,
-//                             "image": String,
-//                             "created_at": String?
-//
-//                            )
-//
-//                        }
+
+                        for ((index, name) in registrationResponse?.data!!.withIndex()) {
+
+                            language_list.add(name)
+                        }
 
 
                         recyclerView.adapter = LanguageAdapter(this@home2,registrationResponse?.data as MutableList<LanguageRequest>)
@@ -282,6 +265,9 @@ class home2 : AppCompatActivity() {
                 // Handle network request failure
                 e.printStackTrace()
             }
+
+                saveLanguageList(language_list)
+                Log.d("list1",language_list.toString())
         }
         }
 
@@ -348,14 +334,7 @@ class home2 : AppCompatActivity() {
         super.onPause()
     }
 
-    private fun saveUserDataList(userDataList: MutableList<MutableMap<String, String>>) {
-        val preferences = getSharedPreferences("LanguageList", MODE_PRIVATE)
-        val editor = preferences.edit()
-        val gson = Gson()
-        val dataJson = gson.toJson(userDataList)
-        editor.putString("user_data_list", dataJson)
-        editor.apply()
-    }
+
     private fun loadUserDataList(): MutableList<MutableMap<String, String>> {
         val preferences = getSharedPreferences("LanguageList", MODE_PRIVATE)
         val gson = Gson()
@@ -364,7 +343,12 @@ class home2 : AppCompatActivity() {
         return gson.fromJson(dataJson, type) ?: mutableListOf()
     }
 
-
+    fun saveLanguageList(languageList: List<LanguageRequest>) {
+        val prefs = getSharedPreferences("Language_List", Context.MODE_PRIVATE)
+        val gson = Gson()
+        val json = gson.toJson(languageList)
+        prefs.edit().putString("LANGUAGE_LIST", json).apply()
+    }
 
 }
 
