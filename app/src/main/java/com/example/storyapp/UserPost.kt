@@ -41,8 +41,8 @@ class UserPost : AppCompatActivity() {
         val sh = getSharedPreferences("MySharedPref", MODE_PRIVATE)
 
          userId = sh.getInt("user_id", 0)
-        val sh1 = getSharedPreferences("language", MODE_PRIVATE)
-        language_id = sh1.getString("language_id", "").toString()
+//        val sh1 = getSharedPreferences("language", MODE_PRIVATE)
+//        language_id = sh1.getString("language_id", "").toString()
 
 
         recyclerView = findViewById(R.id.khokho2)

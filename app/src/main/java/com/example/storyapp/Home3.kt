@@ -88,10 +88,10 @@ class Home3 : AppCompatActivity() {
 
         category_list = mutableListOf()
 
-//        if(SHOW_ADMOB){
-//            loadInterAd()
-//            SHOW_ADMOB = false
-//        }
+        if(SHOW_ADMOB){
+            loadInterAd()
+            SHOW_ADMOB = false
+        }
 
 
 
